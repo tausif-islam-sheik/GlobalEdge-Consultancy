@@ -1,0 +1,13 @@
+{
+  "name": "globaledge-consultancy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:backend": "pnpm --dir backend start:dev",
+    "build:frontend": "pnpm --dir frontend build",
+    "build:backend": "pnpm --dir backend build",
+    "db:push": "pnpm --dir backend db:push",
+    "db:seed": "pnpm --dir backend db:seed"
+  }
+}

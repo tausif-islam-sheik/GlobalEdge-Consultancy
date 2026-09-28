@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 15%;
+  --border: 214 32% 91%;
+}
+
+* { font-family: var(--font-poppins), Poppins, sans-serif; }
+
+html { scroll-behavior: smooth; }
+body { @apply bg-white text-slate-800; }
+
+.hero-grid-bg {
+  background-image: linear-gradient(#eef6fd 1px, transparent 1px),
+    linear-gradient(90deg, #eef6fd 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

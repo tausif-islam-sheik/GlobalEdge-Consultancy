@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  AGENT
+  INSTITUTION_STAFF
+  ADMIN
+}
+
+enum AppStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  OFFER
+  VISA
+  APPROVED
+  REJECTED
+}
+
+enum PostType {
+  NEWS
+  ANNOUNCEMENT
+  BLOG
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  password       String
+  role           Role      @default(STUDENT)
+  passportNumber String?   @unique
+  createdAt      DateTime  @default(now())
+  applications   Application[]
+  wishlist       WishlistItem[]
+}
+
+model Country {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  slug         String        @unique
+  flag         String?
+  image        String?
+  institutions Institution[]
+}
+
+model Institution {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  shortName String?
+  logo      String?
+  cover     String?
+  city      String?
+  qsRank    String?
+  est       String?
+  countryId String?
+  country   Country?  @relation(fields: [countryId], references: [id])
+  programs  Program[]
+}
+
+model Program {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  level       String
+  mode        String      @default("On-campus")
+  duration    String?
+  tuition     String?
+  intake      String?
+  institutionId String?
+  institution Institution? @relation(fields: [institutionId], references: [id])
+  applications Application[]
+}
+
+model Application {
+  id             String    @id @default(cuid())
+  passportNumber String
+  status         AppStatus @default(SUBMITTED)
+  university     String?
+  programId      String?
+  program        Program?  @relation(fields: [programId], references: [id])
+  userId         String?
+  user           User?     @relation(fields: [userId], references: [id])
+  timeline       Timeline[]
+  createdAt      DateTime  @default(now())
+  @@index([passportNumber])
+}
+
+model Timeline {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  status        AppStatus
+  note          String?
+  createdAt     DateTime    @default(now())
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  type      PostType
+  title     String
+  slug      String   @unique
+  excerpt   String?
+  image     String?
+  createdAt DateTime @default(now())
+}
+
+model WishlistItem {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId String?
+  @@index([userId])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

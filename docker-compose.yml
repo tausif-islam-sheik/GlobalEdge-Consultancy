@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: globaledge
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    env_file: ./backend/.env
+    depends_on:
+      - postgres
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+    depends_on:
+      - backend
+volumes:
+  pgdata:
