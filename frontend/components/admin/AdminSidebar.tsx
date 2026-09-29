@@ -54,7 +54,7 @@ const NAV: Item[] = [
       { label: "Visa Checklist Templates", href: "/admin/applications?tab=visa" },
     ],
   },
-  { label: "Live Classes", href: "/admin/live-classes", icon: MonitorPlay, badge: 2 },
+  { label: "Live Classes", href: "/admin/live-classes", icon: MonitorPlay, badge: 1 },
   {
     label: "Agents", href: "/admin/agents", icon: Briefcase, badge: 8,
     children: [

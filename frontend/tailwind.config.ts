@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     container: { center: true, padding: "1rem", screens: { "2xl": "1280px" } },
     extend: {
-      fontFamily: { sans: ["var(--font-poppins)", "Poppins", "sans-serif"] },
+      fontFamily: { sans: ["var(--font-roboto)", "Roboto", "sans-serif"] },
       colors: {
         brand: {
           50: "#eef9ff",

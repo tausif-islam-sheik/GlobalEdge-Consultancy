@@ -22,13 +22,18 @@ export class CatalogService {
     try { return await fn(); } catch { return fallback; }
   }
   countries(q?: string) {
-    return this.safe(() => this.prisma.country.findMany(), demoCountries as any);
+    const where = q ? { name: { contains: q, mode: 'insensitive' as const } } : undefined;
+    return this.safe(() => this.prisma.country.findMany({ where }), demoCountries as any);
   }
   institutions(q?: string) {
-    return this.safe(() => this.prisma.institution.findMany({ include: { country: true } }), demoInstitutions as any);
+    const where = q
+      ? { OR: [{ name: { contains: q, mode: 'insensitive' as const } }, { shortName: { contains: q, mode: 'insensitive' as const } }] }
+      : undefined;
+    return this.safe(() => this.prisma.institution.findMany({ where, include: { country: true } }), demoInstitutions as any);
   }
   programs(q?: string) {
-    return this.safe(() => this.prisma.program.findMany({ include: { institution: true } }), demoPrograms as any);
+    const where = q ? { title: { contains: q, mode: 'insensitive' as const } } : undefined;
+    return this.safe(() => this.prisma.program.findMany({ where, include: { institution: true } }), demoPrograms as any);
   }
   posts(type: string) {
     return this.safe(() => this.prisma.post.findMany({ where: { type: type.toUpperCase() as any } }), []);

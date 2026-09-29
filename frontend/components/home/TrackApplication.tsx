@@ -4,6 +4,7 @@ import { FileSearch, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { API_URL } from "@/lib/utils";
 
 export function TrackApplication() {
   const [passport, setPassport] = useState("");
@@ -12,8 +13,7 @@ export function TrackApplication() {
   async function check() {
     if (!passport.trim()) return setResult("Please enter your passport number.");
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-      const res = await fetch(`${base}/applications/track?passport=${encodeURIComponent(passport.trim())}`);
+      const res = await fetch(`${API_URL}/applications/track?passport=${encodeURIComponent(passport.trim())}`, { cache: "no-store" });
       if (!res.ok) return setResult("No application found. Demo: try A1234567.");
       const j = await res.json();
       setResult(`Status: ${j.status || "UNDER_REVIEW"} — ${j.university || "MSU Malaysia"}`);

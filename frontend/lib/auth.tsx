@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore } from "react";
 
 export type AuthUser = { id: string; email: string; role: string; name?: string };
 
@@ -22,52 +22,57 @@ const Ctx = createContext<AuthCtx>({
 const TOKEN_KEY = "ge_token";
 const USER_KEY = "ge_user";
 
-function readStored(): { token: string | null; user: AuthUser | null } {
+type Stored = { token: string | null; user: AuthUser | null };
+
+// Cached snapshot so getSnapshot() returns a stable reference
+// when nothing changed (required by useSyncExternalStore).
+let cacheKey = "";
+let cacheVal: Stored = { token: null, user: null };
+
+function readStored(): Stored {
   try {
     const token = localStorage.getItem(TOKEN_KEY);
     const raw = localStorage.getItem(USER_KEY);
-    return { token, user: raw ? (JSON.parse(raw) as AuthUser) : null };
+    const key = `${token}|${raw}`;
+    if (key !== cacheKey) {
+      cacheKey = key;
+      cacheVal = { token, user: raw ? (JSON.parse(raw) as AuthUser) : null };
+    }
+    return cacheVal;
   } catch {
     return { token: null, user: null };
   }
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [ready, setReady] = useState(false);
+function subscribe(cb: () => void) {
+  window.addEventListener("storage", cb);
+  window.addEventListener("ge-auth-change", cb);
+  return () => {
+    window.removeEventListener("storage", cb);
+    window.removeEventListener("ge-auth-change", cb);
+  };
+}
 
-  useEffect(() => {
-    const s = readStored();
-    setToken(s.token);
-    setUser(s.user);
-    setReady(true);
-    const sync = () => {
-      const v = readStored();
-      setToken(v.token);
-      setUser(v.user);
-    };
-    window.addEventListener("storage", sync);
-    window.addEventListener("ge-auth-change", sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("ge-auth-change", sync);
-    };
-  }, []);
+const getSnapshot = () => readStored();
+const getServerSnapshot = (): Stored => ({ token: null, user: null });
+const subscribeToNothing = () => () => {};
+// true on client after hydration, false during SSR/prerender
+const getMounted = () => true;
+const getUnmounted = () => false;
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { token, user } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const ready = useSyncExternalStore(subscribeToNothing, getMounted, getUnmounted);
 
   const login = useCallback((t: string, u: AuthUser) => {
     localStorage.setItem(TOKEN_KEY, t);
     localStorage.setItem(USER_KEY, JSON.stringify(u));
-    setToken(t);
-    setUser(u);
     window.dispatchEvent(new Event("ge-auth-change"));
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-    setToken(null);
-    setUser(null);
     window.dispatchEvent(new Event("ge-auth-change"));
   }, []);
 

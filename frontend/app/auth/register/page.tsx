@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { api } from "@/lib/utils";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "STUDENT", passportNumber: "" });
@@ -10,12 +11,9 @@ export default function RegisterPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-      const r = await fetch(`${base}/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const j = await r.json();
-      if (!r.ok) return setMsg(j.message || "Failed");
+      const j = await api<{ email: string; role: string }>("/auth/register", { method: "POST", body: JSON.stringify(form) });
       setMsg(`Registered ${j.email} as ${j.role}. Now login.`);
-    } catch { setMsg("API offline — demo mode."); }
+    } catch (err) { setMsg(err instanceof Error ? err.message : "Failed"); }
   }
   return (
     <section className="container max-w-md py-14">

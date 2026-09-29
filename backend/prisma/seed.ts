@@ -19,5 +19,6 @@ async function main() {
     });
     console.log('Seeded admin@globaledge.com / admin123 + demo A1234567');
   } catch (e) { console.log('Seed skipped (DB offline):', (e as Error).message); }
+  finally { await prisma.$disconnect(); }
 }
-main();
+main().then(() => process.exit(0)).catch(() => process.exit(1));

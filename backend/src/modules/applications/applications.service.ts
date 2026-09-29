@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
+import { APP_STATUSES, CreateApplicationDto } from './dto';
 
 @Injectable()
 export class ApplicationsService {
@@ -14,11 +15,19 @@ export class ApplicationsService {
     return app;
   }
 
-  create(dto: any) {
+  create(dto: CreateApplicationDto) {
+    if (!dto.passportNumber) throw new BadRequestException('passportNumber is required');
     return this.prisma.application.create({ data: { passportNumber: dto.passportNumber, university: dto.university, programId: dto.programId, userId: dto.userId } }).catch(() => ({ id: 'demo', ...dto, status: 'SUBMITTED' }));
   }
 
-  updateStatus(id: string, status: any, note?: string) {
-    return this.prisma.application.update({ where: { id }, data: { status } }).catch(() => ({ id, status }));
+  async updateStatus(id: string, status: any, note?: string) {
+    if (!APP_STATUSES.includes(status)) throw new BadRequestException(`Invalid status. Allowed: ${APP_STATUSES.join(', ')}`);
+    try {
+      const updated = await this.prisma.application.update({ where: { id }, data: { status } });
+      await this.prisma.timeline.create({ data: { applicationId: id, status, note } }).catch(() => null);
+      return this.prisma.application.findUnique({ where: { id }, include: { timeline: true } }).catch(() => updated);
+    } catch {
+      return { id, status };
+    }
   }
 }

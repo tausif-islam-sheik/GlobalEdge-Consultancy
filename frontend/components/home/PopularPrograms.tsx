@@ -16,8 +16,8 @@ export function PopularPrograms() {
         <div className="grid gap-5">
           {programs.slice(0, 1).map((p) => (
             <article key={p.slug} className="grid overflow-hidden rounded-xl border shadow-soft md:grid-cols-[280px_1fr]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <div className="relative h-52 md:h-full bg-slate-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80" alt={p.title} className="absolute inset-0 h-full w-full object-cover" />
                 <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium"><input type="checkbox" className="size-4" /> <Scale className="size-3.5" /> Compare</span>
               </div>

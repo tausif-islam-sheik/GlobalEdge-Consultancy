@@ -8,7 +8,7 @@
   --border: 214 32% 91%;
 }
 
-* { font-family: var(--font-poppins), Poppins, sans-serif; }
+* { font-family: var(--font-roboto), Roboto, sans-serif; }
 
 html { scroll-behavior: smooth; }
 body { @apply bg-white text-slate-800; }

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth, dashboardFor } from "@/lib/auth";
+import { api } from "@/lib/utils";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,13 +18,13 @@ export default function LoginPage() {
     e.preventDefault();
     setMsg("");
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-      const r = await fetch(`${base}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
-      const j = await r.json();
-      if (!r.ok) return setMsg(j.message || "Login failed (API offline? demo mode).");
+      const j = await api<{ access_token: string; user: { id: string; email: string; role: string; name?: string } }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
       login(j.access_token, j.user);
       router.push(dashboardFor(j.user?.role));
-    } catch { setMsg("API offline — demo mode. Start NestJS API to enable real login."); }
+    } catch (err) { setMsg(err instanceof Error ? err.message : "Login failed."); }
   }
   return (
     <section className="container max-w-md py-14">

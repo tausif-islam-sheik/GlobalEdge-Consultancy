@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
 import { useAuth } from "@/lib/auth";
@@ -24,11 +24,25 @@ const CRUMBS: Record<string, string> = {
   "/admin/students/pending": "Students",
   "/admin/students/verified": "Students",
   "/admin/students/success": "Students",
+  "/admin/applications": "Applications",
+  "/admin/live-classes": "Live Classes",
+  "/admin/agents": "Agents",
+  "/admin/commissions": "Commission Invoice",
+  "/admin/announcements": "Announcement",
+  "/admin/news": "News",
+  "/admin/blogs": "Blogs",
+  "/admin/reviews": "Reviews",
+  "/admin/staff": "Staff",
+  "/admin/settings": "Settings",
+  "/admin/profile": "Profile",
+  "/admin/change-password": "Change Password",
 };
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+function ShellInner({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(false);
   const path = usePathname();
+  const sp = useSearchParams();
+  const tab = sp.get("tab");
   const { user, ready } = useAuth();
   const router = useRouter();
 
@@ -46,13 +60,26 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const crumb = CRUMBS[path] ?? path.split("/").pop()?.replace(/-/g, " ") ?? "Dashboard";
+  const tabLabels: Record<string, string> = {
+    review: "Under Review",
+    accepted: "Accepted Applications",
+    rejected: "Rejected Applications",
+    deferral: "Deferral Request",
+    refund: "Refund Request",
+    checklist: "Application Checklist Templates",
+    visa: "Visa Checklist Templates",
+    agreement: "Agreement",
+    agent: "Agent Commission",
+    roles: "Roles & Permissions",
+  };
+  let crumb = CRUMBS[path] ?? path.split("/").pop()?.replace(/-/g, " ") ?? "Dashboard";
+  if (tab && tabLabels[tab]) crumb = tabLabels[tab];
   const pretty = crumb.charAt(0).toUpperCase() + crumb.slice(1);
 
   return (
     <div className={cn("min-h-screen", dark ? "bg-[#0b1526] text-slate-100" : "bg-[#f7f9fc] text-slate-800")}>
       <div className="flex">
-        <AdminSidebar active={path} />
+        <AdminSidebar active={tab ? `${path}?tab=${tab}` : path} />
         <div className="min-w-0 flex-1">
           <AdminTopbar dark={dark} onDark={() => setDark((d) => !d)} crumb={pretty} />
           <main className={cn("mx-auto max-w-[1280px]", dark && "[&_div]:!border-slate-700 [&_.bg-white]:!bg-slate-900")}>
@@ -61,5 +88,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </div>
+  );
+}
+
+export function AdminShell({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense>
+      <ShellInner>{children}</ShellInner>
+    </Suspense>
   );
 }
