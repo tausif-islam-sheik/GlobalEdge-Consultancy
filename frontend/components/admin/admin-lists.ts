@@ -24,6 +24,8 @@ export const faculties = [
   "Accounting and Finance", "Agriculture and Environmental Science", "Architecture and Design",
   "Arts and Humanities", "Biotechnology", "Business and Management",
   "Computer Science and Information Technology", "Creative Arts", "Culinary Arts",
+  "Law", "Media and Communication", "Natural Sciences", "Nursing", "Pharmacy",
+  "Political Science", "Psychology", "Public Health", "Social Sciences", "Sports Science",
 ];
 
 export const studyLevels = [
@@ -34,6 +36,7 @@ export const studyLevels = [
 export const durations = [
   "3 Months", "6 Months", "9 Months", "12 Months", "18 Months",
   "24 Months", "36 Months", "48 Months", "1 Year", "2 Years",
+  "3 Years", "4 Years",
 ];
 
 export const leads = [

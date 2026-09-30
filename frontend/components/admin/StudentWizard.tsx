@@ -122,10 +122,10 @@ export function StudentWizard() {
               <p className="text-[14px]">Add the student&apos;s academic qualifications and results.</p>
               <div className="flex items-start justify-between">
                 <div><h4 className="font-semibold text-sky-600">Educational Information</h4><p className="text-[13px] text-slate-500">Add each completed qualification separately.</p></div>
-                <button onClick={() => setEdu(true)} className="rounded-lg border px-3 py-2 text-sm font-medium">+ Add Education</button>
+                <button onClick={() => setEdu(true)} className="rounded border px-3 py-2 text-sm font-medium">+ Add Education</button>
               </div>
               {!edu ? (
-                <div className="rounded-lg border border-dashed p-8 text-center text-[13.5px] text-slate-500">No education added yet. Click Add Education to add a qualification.</div>
+                <div className="rounded border border-dashed p-8 text-center text-[13.5px] text-slate-500">No education added yet. Click Add Education to add a qualification.</div>
               ) : (
                 <PageCard className="p-4">
                   <h4 className="font-bold">Education 1</h4>
@@ -146,13 +146,13 @@ export function StudentWizard() {
               <p className="text-[14px]">Upload the student&apos;s passport copy, photo, and academic transcript. You can add more documents later from the student&apos;s profile.</p>
               <div className="flex items-center justify-between">
                 <div><h4 className="font-semibold text-sky-600">Required Documents</h4><p className="text-[13px] text-slate-500">Upload the common student documents below.</p></div>
-                <button className="rounded-lg border px-3 py-2 text-sm font-medium">+ Add More</button>
+                <button className="rounded border px-3 py-2 text-sm font-medium">+ Add More</button>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
                 {["Passport Copy", "Photo", "Academic Transcript"].map((d) => (
                   <div key={d}>
                     <div className="mb-1.5 text-[13.5px] font-semibold">{d}</div>
-                    <div className="grid place-items-center rounded-lg border border-dashed bg-slate-50 p-8 text-center">
+                    <div className="grid place-items-center rounded border border-dashed bg-slate-50 p-8 text-center">
                       <Upload className="size-5 text-slate-400" />
                       <div className="mt-1 text-[13.5px] font-semibold">Click or drag a file here</div>
                       <div className="text-[12px] text-slate-500">PDF or image, up to 5 MB</div>
@@ -165,16 +165,16 @@ export function StudentWizard() {
           )}
         </div>
         <div className="flex justify-end gap-2 border-t p-4">
-          <button className="rounded-lg border px-4 py-2 text-sm font-medium">Cancel</button>
-          <button className="rounded-lg border px-4 py-2 text-sm font-medium">Draft</button>
-          {step > 1 && <button onClick={() => setStep((s) => s - 1)} className="rounded-lg border px-4 py-2 text-sm font-medium">Previous</button>}
+          <button className="rounded border px-4 py-2 text-sm font-medium">Cancel</button>
+          <button className="rounded border px-4 py-2 text-sm font-medium">Draft</button>
+          {step > 1 && <button onClick={() => setStep((s) => s - 1)} className="rounded border px-4 py-2 text-sm font-medium">Previous</button>}
           {step < 6 ? (
-            <button onClick={() => setStep((s) => s + 1)} className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white">Save & Next</button>
+            <button onClick={() => setStep((s) => s + 1)} className="rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white">Save & Next</button>
           ) : (
             <>
-              <button className="rounded-lg border px-4 py-2 text-sm font-medium">Create Profile</button>
-              <button className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white">Create and Send Account Details</button>
-              <button className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white">Create Profile and Apply</button>
+              <button className="rounded border px-4 py-2 text-sm font-medium">Create Profile</button>
+              <button className="rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white">Create and Send Account Details</button>
+              <button className="rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white">Create Profile and Apply</button>
             </>
           )}
         </div>

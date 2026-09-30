@@ -7,122 +7,962 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  STUDENT
-  AGENT
-  INSTITUTION_STAFF
-  ADMIN
+// =========================================
+// Enums (from MySQL ENUM columns)
+// =========================================
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  LOCKED
 }
 
-enum AppStatus {
-  DRAFT
+enum AgentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DEACTIVATED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum ActiveStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CommissionType {
+  PERCENTAGE
+  FLAT
+  TIERED
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ScholarshipStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum DocumentStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPECTED
+}
+
+enum ApplicationStatus {
+  PENDING
   SUBMITTED
   UNDER_REVIEW
-  OFFER
-  VISA
+  OFFER_RECEIVED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum HistoryEntityType {
+  AGENT
+  APPLICATION
+  UNIVERSITY
+  DOCUMENT
+}
+
+enum TicketCategory {
+  BILLING
+  TECHNICAL
+  APPLICATION
+  GENERAL
+  OTHER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TemplateType {
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+enum Audience {
+  ALL
+  ADMIN
+  AGENT
+  STUDENT
+  UNIVERSITY
+}
+
+enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ResourceType {
+  MARKETING
+  TRAINING
+  GUIDE
+  OTHER
+}
+
+enum ApplicationRequestType {
+  DEFERRAL
+  REFUND
+}
+
+enum ApplicationRequestStatus {
+  PENDING
   APPROVED
   REJECTED
 }
 
-enum PostType {
-  NEWS
-  ANNOUNCEMENT
-  BLOG
+// =========================================
+// RBAC Tables
+// =========================================
+
+model Role {
+  id          String   @id @default(uuid()) @map("id") @db.Char(36)
+  name        String   @unique @map("name") @db.VarChar(50)
+  description String?  @map("description") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  users           User[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
 }
+
+model Permission {
+  id          String   @id @default(uuid()) @map("id") @db.Char(36)
+  name        String   @unique @map("name") @db.VarChar(100)
+  description String?  @map("description") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id") @db.Char(36)
+  permissionId String @map("permission_id") @db.Char(36)
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// =========================================
+// User Authentication Tables
+// =========================================
 
 model User {
-  id             String    @id @default(cuid())
-  name           String
-  email          String    @unique
-  password       String
-  role           Role      @default(STUDENT)
-  passportNumber String?   @unique
-  createdAt      DateTime  @default(now())
-  applications   Application[]
-  wishlist       WishlistItem[]
+  id                  String     @id @default(uuid()) @map("id") @db.Char(36)
+  email               String     @unique @map("email") @db.VarChar(255)
+  password            String     @map("password") @db.VarChar(255)
+  twoFactorEnabled    Boolean    @default(false) @map("two_factor_enabled")
+  twoFactorSecret     String?    @map("two_factor_secret") @db.VarChar(255)
+  roleId              String     @map("role_id") @db.Char(36)
+  status              UserStatus @default(ACTIVE) @map("status")
+  failedLoginAttempts Int        @default(0) @map("failed_login_attempts")
+  lastLoginAt         DateTime?  @map("last_login_at") @db.Timestamp(0)
+  createdAt           DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt           DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt           DateTime?  @map("deleted_at") @db.Timestamp(0)
+
+  role               Role                @relation(fields: [roleId], references: [id])
+  refreshTokens      RefreshToken[]
+  adminProfile       AdminUser?
+  agentProfile       Agent?
+  studentProfile     Student?
+  universityAccounts University[]
+  statusChanges      StatusHistory[]     @relation("HistoryChangedBy")
+  auditLogs          AuditLog[]          @relation("AuditUser")
+  impersonatedLogs   AuditLog[]          @relation("AuditImpersonator")
+  notifications      Notification[]
+  supportTickets     SupportTicket[]
+  requestedRequests  ApplicationRequest[] @relation("RequestRequestedBy")
+  reviewedRequests   ApplicationRequest[] @relation("RequestReviewedBy")
+
+  @@index([roleId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("users")
 }
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @map("id") @db.Char(36)
+  token     String   @unique @map("token") @db.VarChar(500)
+  userId    String   @map("user_id") @db.Char(36)
+  expiresAt DateTime @map("expires_at") @db.Timestamp(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+// =========================================
+// User Profile Tables
+// =========================================
+
+model AdminUser {
+  id        String    @id @default(uuid()) @map("id") @db.Char(36)
+  userId    String    @unique @map("user_id") @db.Char(36)
+  firstName String    @map("first_name") @db.VarChar(100)
+  lastName  String    @map("last_name") @db.VarChar(100)
+  phone     String?   @map("phone") @db.VarChar(20)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admin_users")
+}
+
+model Agent {
+  id                String      @id @default(uuid()) @map("id") @db.Char(36)
+  userId            String      @unique @map("user_id") @db.Char(36)
+  agencyName        String      @map("agency_name") @db.VarChar(255)
+  ownerName         String      @map("owner_name") @db.VarChar(255)
+  location          String      @map("location") @db.VarChar(255)
+  status            AgentStatus @default(PENDING) @map("status")
+  verified          Boolean     @default(false) @map("verified")
+  phone             String?     @map("phone") @db.VarChar(20)
+  commissionModelId String?     @map("commission_model_id") @db.Char(36)
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt         DateTime?   @map("deleted_at") @db.Timestamp(0)
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commissionModel CommissionModel? @relation(fields: [commissionModelId], references: [id], onDelete: SetNull)
+  students        Student[]
+  applications    Application[]
+  commissions     Commission[]
+  invoices        Invoice[]
+  documents       Document[]
+  supportTickets  SupportTicket[]
+  requests        ApplicationRequest[]
+
+  @@index([status])
+  @@index([verified])
+  @@index([location])
+  @@index([commissionModelId])
+  @@map("agents")
+}
+
+model Student {
+  id                String    @id @default(uuid()) @map("id") @db.Char(36)
+  userId            String    @unique @map("user_id") @db.Char(36)
+  agentId           String?   @map("agent_id") @db.Char(36)
+  firstName         String    @map("first_name") @db.VarChar(100)
+  lastName          String    @map("last_name") @db.VarChar(100)
+  email             String?   @map("email") @db.VarChar(255)
+  accessPass        String?   @map("access_pass") @db.VarChar(255)
+  nationality       String?   @map("nationality") @db.VarChar(100)
+  dateOfBirth       DateTime? @map("date_of_birth") @db.Date
+  gender            Gender?   @map("gender")
+  passportNumber    String?   @map("passport_number") @db.VarChar(50)
+  passportExpiryDate DateTime? @map("passport_expiry_date") @db.Date
+  phone             String?   @map("phone") @db.VarChar(20)
+  address           String?   @map("address") @db.Text
+  city              String?   @map("city") @db.VarChar(100)
+  state             String?   @map("state") @db.VarChar(100)
+  zipCode           String?   @map("zip_code") @db.VarChar(20)
+  country           String?   @map("country") @db.VarChar(100)
+  mailingAddress    String?   @map("mailing_address") @db.Text
+  mailingCountry    String?   @map("mailing_country") @db.VarChar(100)
+  mailingState      String?   @map("mailing_state") @db.VarChar(100)
+  mailingCity       String?   @map("mailing_city") @db.VarChar(100)
+  mailingZipCode    String?   @map("mailing_zip_code") @db.VarChar(20)
+  branchId          String?   @map("branch_id") @db.Char(36)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamp(0)
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent        Agent?               @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  applications Application[]
+  scholarships Scholarship[]
+  documents    Document[]
+  requests     ApplicationRequest[]
+
+  @@index([agentId])
+  @@index([country])
+  @@index([passportNumber])
+  @@map("students")
+}
+
+model University {
+  id              String       @id @default(uuid()) @map("id") @db.Char(36)
+  userId          String?      @unique @map("user_id") @db.Char(36)
+  name            String       @map("name") @db.VarChar(255)
+  countryId       String?      @map("country_id") @db.Char(36)
+  location        String?      @map("location") @db.VarChar(255)
+  logoUrl         String?      @map("logo_url") @db.VarChar(500)
+  bannerUrl       String?      @map("banner_url") @db.VarChar(500)
+  description     String?      @map("description") @db.Text
+  featureVideoUrl String?      @map("feature_video_url") @db.VarChar(500)
+  website         String?      @map("website") @db.VarChar(255)
+  phone           String?      @map("phone") @db.VarChar(20)
+  status          ActiveStatus @default(INACTIVE) @map("status")
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt       DateTime?    @map("deleted_at") @db.Timestamp(0)
+
+  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  country      Country?   @relation(fields: [countryId], references: [id])
+  campuses     Campus[]
+  images       UniversityImage[]
+  programs     Program[]
+  faculties    Faculty[]
+  applications Application[]
+  documents    Document[]
+  supportTickets SupportTicket[]
+
+  @@index([countryId])
+  @@index([status])
+  @@index([name])
+  @@index([name, description])
+  @@map("universities")
+}
+
+// =========================================
+// Master Data Tables
+// =========================================
 
 model Country {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  slug         String        @unique
-  flag         String?
-  image        String?
-  institutions Institution[]
+  id            String   @id @default(uuid()) @map("id") @db.Char(36)
+  name          String   @unique @map("name") @db.VarChar(100)
+  isoCode       String   @unique @map("iso_code") @db.VarChar(3)
+  isDestination Boolean  @default(false) @map("is_destination")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  universities University[]
+  campuses     Campus[]
+
+  @@index([isDestination])
+  @@map("countries")
 }
 
-model Institution {
-  id        String    @id @default(cuid())
-  name      String
-  slug      String    @unique
-  shortName String?
-  logo      String?
-  cover     String?
-  city      String?
-  qsRank    String?
-  est       String?
-  countryId String?
-  country   Country?  @relation(fields: [countryId], references: [id])
-  programs  Program[]
+model Currency {
+  id             String    @id @default(uuid()) @map("id") @db.Char(36)
+  code           String    @unique @map("code") @db.VarChar(3)
+  name           String?   @map("name") @db.VarChar(100)
+  symbol         String    @map("symbol") @db.VarChar(10)
+  exchangeRate   Decimal   @default(1.0) @map("exchange_rate") @db.Decimal(18, 8)
+  decimalPlaces  Int       @default(2) @map("decimal_places")
+  isPriority     Boolean   @default(false) @map("is_priority")
+  active         Boolean   @default(true) @map("active")
+  rateUpdatedAt  DateTime? @map("rate_updated_at") @db.Timestamp(0)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("currencies")
+}
+
+model Intake {
+  id        String   @id @default(uuid()) @map("id") @db.Char(36)
+  name      String   @map("name") @db.VarChar(50)
+  month     Int      @map("month") @db.SmallInt
+  year      Int      @map("year") @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  programIntakes     ProgramIntake[]
+  applications       Application[]
+  preferredForRequests ApplicationRequest[] @relation("RequestIntake")
+
+  @@unique([name, year])
+  @@index([year, month])
+  @@map("intakes")
+}
+
+model ApplicationStage {
+  id          String   @id @default(uuid()) @map("id") @db.Char(36)
+  name        String   @unique @map("name") @db.VarChar(50)
+  order       Int      @default(0) @map("order") @db.SmallInt
+  description String?  @map("description") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  applications Application[]
+
+  @@map("application_stages")
+}
+
+model Faculty {
+  id          String   @id @default(uuid()) @map("id") @db.Char(36)
+  universityId String? @map("university_id") @db.Char(36)
+  name        String   @map("name") @db.VarChar(100)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  university University? @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  programs   Program[]
+
+  @@index([universityId])
+  @@index([universityId, name])
+  @@index([name])
+  @@map("faculties")
+}
+
+model DegreeLevel {
+  id        String   @id @default(uuid()) @map("id") @db.Char(36)
+  name      String   @unique @map("name") @db.VarChar(50)
+  order     Int      @default(0) @map("order") @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  programs Program[]
+
+  @@map("degree_levels")
+}
+
+// =========================================
+// Academic Tables
+// =========================================
+
+model Campus {
+  id          String       @id @default(uuid()) @map("id") @db.Char(36)
+  universityId String      @map("university_id") @db.Char(36)
+  countryId   String?      @map("country_id") @db.Char(36)
+  name        String       @map("name") @db.VarChar(255)
+  state       String       @map("state") @db.VarChar(255)
+  city        String       @map("city") @db.VarChar(255)
+  addressLine String       @map("address_line") @db.VarChar(500)
+  email       String?      @map("email") @db.VarChar(255)
+  phone       String?      @map("phone") @db.VarChar(50)
+  status      ActiveStatus @default(ACTIVE) @map("status")
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt   DateTime?    @map("deleted_at") @db.Timestamp(0)
+
+  university       University        @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  country          Country?          @relation(fields: [countryId], references: [id])
+  applications     Application[]
+  programCampuses  ProgramCampus[]
+
+  @@index([universityId])
+  @@index([countryId])
+  @@index([status])
+  @@map("campuses")
+}
+
+model UniversityImage {
+  id           String   @id @default(uuid()) @map("id") @db.Char(36)
+  universityId String   @map("university_id") @db.Char(36)
+  url          String   @map("url") @db.VarChar(500)
+  caption      String?  @map("caption") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+
+  @@index([universityId])
+  @@map("university_images")
 }
 
 model Program {
-  id          String      @id @default(cuid())
-  title       String
-  slug        String      @unique
-  level       String
-  mode        String      @default("On-campus")
-  duration    String?
-  tuition     String?
-  intake      String?
-  institutionId String?
-  institution Institution? @relation(fields: [institutionId], references: [id])
-  applications Application[]
+  id                  String   @id @default(uuid()) @map("id") @db.Char(36)
+  universityId        String   @map("university_id") @db.Char(36)
+  facultyId           String?  @map("faculty_id") @db.Char(36)
+  degreeLevelId       String?  @map("degree_level_id") @db.Char(36)
+  name                String   @map("name") @db.VarChar(255)
+  level               String   @map("level") @db.VarChar(50)
+  duration            String   @map("duration") @db.VarChar(50)
+  tuitionFee          Decimal  @map("tuition_fee") @db.Decimal(12, 2)
+  applicationFee      Decimal  @default(0) @map("application_fee") @db.Decimal(10, 2)
+  deposit             Decimal  @default(0) @map("deposit") @db.Decimal(10, 2)
+  currency            String   @default("USD") @map("currency") @db.VarChar(3)
+  isVisible           Boolean  @default(true) @map("is_visible")
+  isLocked            Boolean  @default(false) @map("is_locked")
+  processingTime      String?  @map("processing_time") @db.VarChar(50)
+  requirements        String?  @map("requirements") @db.Text
+  description         String?  @map("description") @db.Text
+  programImage        String?  @map("program_image") @db.VarChar(500)
+  requiredDocuments   Json?    @map("required_documents")
+  englishRequirements Json?    @map("english_requirements")
+  intakesData         Json?    @map("intakes_data")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamp(0)
+
+  university        University       @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  faculty           Faculty?         @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  degreeLevel       DegreeLevel?     @relation(fields: [degreeLevelId], references: [id], onDelete: SetNull)
+  programIntakes    ProgramIntake[]
+  programCampuses   ProgramCampus[]
+  applications      Application[]
+  favorites         Favorite[]
+
+  @@index([universityId])
+  @@index([facultyId])
+  @@index([degreeLevelId])
+  @@index([isVisible])
+  @@index([tuitionFee])
+  @@index([level])
+  @@index([name, requirements])
+  @@map("programs")
 }
+
+model ProgramIntake {
+  programId String @map("program_id") @db.Char(36)
+  intakeId  String @map("intake_id") @db.Char(36)
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  intake  Intake  @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+
+  @@id([programId, intakeId])
+  @@map("program_intakes")
+}
+
+// =========================================
+// Application & Workflow Tables
+// =========================================
 
 model Application {
-  id             String    @id @default(cuid())
-  passportNumber String
-  status         AppStatus @default(SUBMITTED)
-  university     String?
-  programId      String?
-  program        Program?  @relation(fields: [programId], references: [id])
-  userId         String?
-  user           User?     @relation(fields: [userId], references: [id])
-  timeline       Timeline[]
-  createdAt      DateTime  @default(now())
-  @@index([passportNumber])
+  id           String            @id @default(uuid()) @map("id") @db.Char(36)
+  studentId    String            @map("student_id") @db.Char(36)
+  universityId String            @map("university_id") @db.Char(36)
+  programId    String            @map("program_id") @db.Char(36)
+  intakeId     String            @map("intake_id") @db.Char(36)
+  campusId     String?           @map("campus_id") @db.Char(36)
+  stageId      String            @map("stage_id") @db.Char(36)
+  agentId      String?           @map("agent_id") @db.Char(36)
+  status       ApplicationStatus @default(PENDING) @map("status")
+  appliedAt    DateTime          @default(now()) @map("applied_at") @db.Timestamp(0)
+  updatedAt    DateTime          @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt    DateTime?         @map("deleted_at") @db.Timestamp(0)
+
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  university University       @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  program    Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
+  intake     Intake           @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  campus     Campus?          @relation(fields: [campusId], references: [id], onDelete: SetNull)
+  stage      ApplicationStage @relation(fields: [stageId], references: [id])
+  agent      Agent?           @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  documents  Document[]
+  commissions Commission[]
+  supportTickets SupportTicket[]
+  requests   ApplicationRequest[]
+
+  @@index([studentId])
+  @@index([universityId])
+  @@index([programId])
+  @@index([campusId])
+  @@index([agentId])
+  @@index([status])
+  @@index([stageId])
+  @@index([appliedAt])
+  @@index([studentId, stageId, status])
+  @@map("applications")
 }
 
-model Timeline {
-  id            String      @id @default(cuid())
-  applicationId String
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  status        AppStatus
-  note          String?
-  createdAt     DateTime    @default(now())
+model ProgramCampus {
+  programId String @map("program_id") @db.Char(36)
+  campusId  String @map("campus_id") @db.Char(36)
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  campus  Campus  @relation(fields: [campusId], references: [id], onDelete: Cascade)
+
+  @@id([programId, campusId])
+  @@map("program_campuses")
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  type      PostType
-  title     String
-  slug      String   @unique
-  excerpt   String?
-  image     String?
-  createdAt DateTime @default(now())
+model StatusHistory {
+  id          String            @id @default(uuid()) @map("id") @db.Char(36)
+  entityType  HistoryEntityType @map("entity_type")
+  entityId    String            @map("entity_id") @db.Char(36)
+  oldStatus   String?           @map("old_status") @db.VarChar(50)
+  newStatus   String            @map("new_status") @db.VarChar(50)
+  reason      String?           @map("reason") @db.Text
+  changedById String            @map("changed_by_id") @db.Char(36)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamp(0)
+
+  changedBy User @relation("HistoryChangedBy", fields: [changedById], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([changedById])
+  @@index([createdAt])
+  @@map("status_history")
 }
 
-model WishlistItem {
-  id        String @id @default(cuid())
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  programId String?
+// =========================================
+// Financial Tables
+// =========================================
+
+model CommissionModel {
+  id          String         @id @default(uuid()) @map("id") @db.Char(36)
+  name        String         @map("name") @db.VarChar(100)
+  type        CommissionType @map("type")
+  value       Decimal        @map("value") @db.Decimal(10, 2)
+  description String?        @map("description") @db.Text
+  isDefault   Boolean        @default(false) @map("is_default")
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  agents Agent[]
+
+  @@index([type])
+  @@index([isDefault])
+  @@map("commission_models")
+}
+
+model Commission {
+  id            String           @id @default(uuid()) @map("id") @db.Char(36)
+  agentId       String           @map("agent_id") @db.Char(36)
+  applicationId String           @map("application_id") @db.Char(36)
+  amount        Decimal          @map("amount") @db.Decimal(12, 2)
+  status        CommissionStatus @default(PENDING) @map("status")
+  approvedAt    DateTime?        @map("approved_at") @db.Timestamp(0)
+  paidAt        DateTime?        @map("paid_at") @db.Timestamp(0)
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt     DateTime?        @map("deleted_at") @db.Timestamp(0)
+
+  agent       Agent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([applicationId])
+  @@index([status])
+  @@index([approvedAt, paidAt])
+  @@map("commissions")
+}
+
+model Invoice {
+  id        String        @id @default(uuid()) @map("id") @db.Char(36)
+  agentId   String        @map("agent_id") @db.Char(36)
+  amount    Decimal       @map("amount") @db.Decimal(12, 2)
+  status    InvoiceStatus @default(PENDING) @map("status")
+  dueDate   DateTime      @map("due_date") @db.Date
+  paidAt    DateTime?     @map("paid_at") @db.Timestamp(0)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt DateTime?     @map("deleted_at") @db.Timestamp(0)
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("invoices")
+}
+
+model Scholarship {
+  id        String            @id @default(uuid()) @map("id") @db.Char(36)
+  studentId String            @map("student_id") @db.Char(36)
+  name      String            @map("name") @db.VarChar(255)
+  amount    Decimal           @map("amount") @db.Decimal(12, 2)
+  status    ScholarshipStatus @default(PENDING) @map("status")
+  isActive  Boolean           @default(true) @map("is_active")
+  validUntil DateTime?        @map("valid_until") @db.Date
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime          @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt DateTime?         @map("deleted_at") @db.Timestamp(0)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([status])
+  @@index([validUntil])
+  @@map("scholarships")
+}
+
+// =========================================
+// Document Management Tables
+// =========================================
+
+model Document {
+  id            String         @id @default(uuid()) @map("id") @db.Char(36)
+  name          String         @map("name") @db.VarChar(255)
+  fileUrl       String         @map("file_url") @db.VarChar(500)
+  fileType      String         @map("file_type") @db.VarChar(50)
+  status        DocumentStatus @default(PENDING) @map("status")
+  remarks       String?        @map("remarks") @db.Text
+  agentId       String?        @map("agent_id") @db.Char(36)
+  studentId     String?        @map("student_id") @db.Char(36)
+  universityId  String?        @map("university_id") @db.Char(36)
+  applicationId String?        @map("application_id") @db.Char(36)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  agent       Agent?       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  student     Student?     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  university  University?  @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([studentId])
+  @@index([universityId])
+  @@index([applicationId])
+  @@index([status])
+  @@map("documents")
+}
+
+// =========================================
+// Communication & Support Tables
+// =========================================
+
+model Notification {
+  id        String   @id @default(uuid()) @map("id") @db.Char(36)
+  userId    String   @map("user_id") @db.Char(36)
+  title     String   @map("title") @db.VarChar(255)
+  message   String   @map("message") @db.Text
+  type      String   @default("SYSTEM") @map("type") @db.VarChar(50)
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
-model Subscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+model SupportTicket {
+  id            String         @id @default(uuid()) @map("id") @db.Char(36)
+  userId        String         @map("user_id") @db.Char(36)
+  agentId       String?        @map("agent_id") @db.Char(36)
+  applicationId String?        @map("application_id") @db.Char(36)
+  universityId  String?        @map("university_id") @db.Char(36)
+  subject       String         @map("subject") @db.VarChar(255)
+  message       String         @map("message") @db.Text
+  category      TicketCategory @default(OTHER) @map("category")
+  status        TicketStatus   @default(OPEN) @map("status")
+  priority      TicketPriority @default(MEDIUM) @map("priority")
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt     DateTime?      @map("deleted_at") @db.Timestamp(0)
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent       Agent?       @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  university  University?  @relation(fields: [universityId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@map("support_tickets")
+}
+
+model Template {
+  id        String       @id @default(uuid()) @map("id") @db.Char(36)
+  name      String       @unique @map("name") @db.VarChar(100)
+  type      TemplateType @map("type")
+  subject   String?      @map("subject") @db.VarChar(255)
+  body      String       @map("body") @db.Text
+  variables Json?        @map("variables")
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime     @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@index([type])
+  @@map("templates")
+}
+
+model Announcement {
+  id              String               @id @default(uuid()) @map("id") @db.Char(36)
+  title           String               @map("title") @db.VarChar(255)
+  content         String               @map("content") @db.Text
+  target          Audience             @default(ALL) @map("target")
+  audienceFilters Json?                @map("audience_filters")
+  startDate       DateTime             @default(now()) @map("start_date") @db.Timestamp(0)
+  endDate         DateTime?            @map("end_date") @db.Timestamp(0)
+  priority        AnnouncementPriority @default(NORMAL) @map("priority")
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt       DateTime?            @map("deleted_at") @db.Timestamp(0)
+
+  @@index([target])
+  @@index([startDate, endDate])
+  @@index([priority])
+  @@map("announcements")
+}
+
+// =========================================
+// CMS & Resources Tables
+// =========================================
+
+model HelpArticle {
+  id        String    @id @default(uuid()) @map("id") @db.Char(36)
+  title     String    @map("title") @db.VarChar(255)
+  body      String    @map("body") @db.Text
+  category  String    @map("category") @db.VarChar(100)
+  audience  Audience  @default(ALL) @map("audience")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(0)
+
+  @@index([category])
+  @@index([audience])
+  @@index([title, body])
+  @@map("help_articles")
+}
+
+model Banner {
+  id        String   @id @default(uuid()) @map("id") @db.Char(36)
+  title     String?  @map("title") @db.VarChar(255)
+  imageUrl  String   @map("image_url") @db.VarChar(500)
+  linkUrl   String?  @map("link_url") @db.VarChar(500)
+  placement String   @default("DASHBOARD") @map("placement") @db.VarChar(50)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@index([placement])
+  @@index([isActive])
+  @@map("banners")
+}
+
+model Resource {
+  id          String       @id @default(uuid()) @map("id") @db.Char(36)
+  name        String       @map("name") @db.VarChar(255)
+  description String?      @map("description") @db.Text
+  fileUrl     String       @map("file_url") @db.VarChar(500)
+  type        ResourceType @map("type")
+  audience    Audience     @default(ALL) @map("audience")
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt   DateTime?    @map("deleted_at") @db.Timestamp(0)
+
+  @@index([type])
+  @@index([audience])
+  @@map("resources")
+}
+
+// =========================================
+// System Configuration Tables
+// =========================================
+
+model SystemSetting {
+  id          String   @id @default(uuid()) @map("id") @db.Char(36)
+  settingKey  String   @unique @map("key") @db.VarChar(100)
+  value       String   @map("value") @db.Text
+  description String?  @map("description") @db.VarChar(255)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("system_settings")
+}
+
+// =========================================
+// Audit & Security Tables
+// =========================================
+
+model AuditLog {
+  id             String    @id @default(uuid()) @map("id") @db.Char(36)
+  userId         String    @map("user_id") @db.Char(36)
+  impersonatorId String?   @map("impersonator_id") @db.Char(36)
+  action         String    @map("action") @db.VarChar(100)
+  entityType     String    @map("entity_type") @db.VarChar(50)
+  entityId       String    @map("entity_id") @db.Char(36)
+  beforeSnapshot Json?     @map("before_snapshot")
+  afterSnapshot  Json?     @map("after_snapshot")
+  ipAddress      String?   @map("ip_address") @db.VarChar(45)
+  userAgent      String?   @map("user_agent") @db.VarChar(500)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user         User  @relation("AuditUser", fields: [userId], references: [id], onDelete: Cascade)
+  impersonator User? @relation("AuditImpersonator", fields: [impersonatorId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([impersonatorId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// =========================================
+// Favorites/Bookmarks Table
+// =========================================
+
+model Favorite {
+  id        String   @id @default(uuid()) @map("id") @db.Char(36)
+  userId    String   @map("user_id") @db.Char(36)
+  programId String   @map("program_id") @db.Char(36)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, programId])
+  @@index([userId])
+  @@index([programId])
+  @@map("favorites")
+}
+
+// =========================================
+// Application Requests (deferral / refund)
+// =========================================
+
+model ApplicationRequest {
+  id               String                   @id @default(uuid()) @map("id") @db.Char(36)
+  applicationId    String                   @map("application_id") @db.Char(36)
+  studentId        String                   @map("student_id") @db.Char(36)
+  agentId          String?                  @map("agent_id") @db.Char(36)
+  type             ApplicationRequestType   @map("type")
+  status           ApplicationRequestStatus @default(PENDING) @map("status")
+  reason           String?                  @map("reason") @db.VarChar(40)
+  preferredIntakeId String?                 @map("preferred_intake_id") @db.Char(36)
+  note             String?                  @map("note") @db.Text
+  requestedBy      String?                  @map("requested_by") @db.Char(36)
+  reviewNote       String?                  @map("review_note") @db.Text
+  reviewedBy       String?                  @map("reviewed_by") @db.Char(36)
+  reviewedAt       DateTime?                @map("reviewed_at") @db.Timestamp(0)
+  createdAt        DateTime                 @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime                 @updatedAt @map("updated_at") @db.Timestamp(0)
+  deletedAt        DateTime?                @map("deleted_at") @db.Timestamp(0)
+
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  student         Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  agent           Agent?      @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  preferredIntake Intake?     @relation("RequestIntake", fields: [preferredIntakeId], references: [id], onDelete: SetNull)
+  requestedByUser User?       @relation("RequestRequestedBy", fields: [requestedBy], references: [id], onDelete: SetNull)
+  reviewedByUser  User?       @relation("RequestReviewedBy", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([applicationId])
+  @@index([studentId])
+  @@index([type, status])
+  @@index([createdAt])
+  @@map("application_requests")
 }

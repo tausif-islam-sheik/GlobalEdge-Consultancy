@@ -13,10 +13,10 @@ export default function VisitorsPage() {
         <h1 className="text-[24px] font-bold">Visitors</h1>
         <div className="flex flex-wrap gap-2 text-sm">
           {["All", "Pending", "Completed"].map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={cn("rounded-lg border bg-white px-3 py-2 font-medium", tab === t && "bg-sky-600 text-white border-sky-600")}>{t}</button>
+            <button key={t} onClick={() => setTab(t)} className={cn("rounded border bg-white px-3 py-2 font-medium", tab === t && "bg-sky-600 text-white border-sky-600")}>{t}</button>
           ))}
-          <button className="rounded-lg border bg-white px-3 py-2 font-medium">Get Visit Link</button>
-          <button className="rounded-lg bg-sky-600 px-3 py-2 font-semibold text-white">Log Visit</button>
+          <button className="rounded border bg-white px-3 py-2 font-medium">Get Visit Link</button>
+          <button className="rounded bg-sky-600 px-3 py-2 font-semibold text-white">Log Visit</button>
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -60,7 +60,7 @@ export default function VisitorsPage() {
                 <td className="px-2 py-4 text-slate-400">—</td>
                 <td className="px-2 py-4"><div className="font-semibold">{v.counsellor}</div><div className="text-slate-500">Managing Director</div></td>
                 <td className="px-2 py-4"><div className="space-y-1"><Pill tone="gray">Scheduled</Pill><div><Pill tone="gray">Appointment</Pill></div></div></td>
-                <td className="px-2 py-4"><div className="flex gap-1.5"><button className="flex items-center gap-1 rounded-lg border px-3 py-1.5 text-[12.5px] font-medium"><Pencil className="size-3.5" /> Edit</button><button className="rounded-lg border px-2.5 py-1.5 text-red-500"><Trash2 className="size-3.5" /></button></div></td>
+                <td className="px-2 py-4"><div className="flex gap-1.5"><button className="flex items-center gap-1 rounded border px-3 py-1.5 text-[12.5px] font-medium"><Pencil className="size-3.5" /> Edit</button><button className="rounded border px-2.5 py-1.5 text-red-500"><Trash2 className="size-3.5" /></button></div></td>
               </tr>
             ))}
           </tbody>

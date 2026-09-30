@@ -1,6 +1,7 @@
 "use client";
 import { PageCard, SearchInput, Select, Stat, Pill } from "@/components/admin/admin-ui";
-import { allStudents } from "@/components/admin/admin-lists";
+import { allStudents as fallbackStudents } from "@/components/admin/admin-lists";
+import { getAdminStudents, useLive, type AdminStudent } from "@/lib/api";
 
 export type StudentFilter = "all" | "pending" | "verified" | "success";
 
@@ -11,18 +12,44 @@ const TITLES: Record<StudentFilter, string> = {
   success: "Success Students",
 };
 
+function initialsOf(name: string) {
+  return name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function toRow(s: AdminStudent) {
+  const verified = s.status === "ACTIVE";
+  return {
+    id: s.id.slice(0, 8).toUpperCase(),
+    date: s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "",
+    src: s.agent === "Direct Student" ? "Direct Signup" : "Agent Created",
+    initials: initialsOf(s.name),
+    name: s.name,
+    country: s.country ?? "",
+    passport: s.passport ? `Passport: ${s.passport}` : "Passport: Not provided",
+    phone: s.phone ?? "Not provided",
+    email: s.email ?? "",
+    agent: s.agent ?? "Direct Student",
+    counsellor: "Unassigned",
+    status: verified ? "Verified" : "Pending",
+    app: "Application: No application",
+    docs: "Documents: No documents",
+  };
+}
+
 export function StudentsTable({ filter }: { filter: StudentFilter }) {
+  const live = useLive(getAdminStudents, []);
+  const source = live.length ? live.map(toRow) : fallbackStudents;
   const rows =
-    filter === "all" ? allStudents.slice(0, 3)
-    : filter === "pending" ? allStudents.filter((s) => s.status === "Pending")
-    : filter === "verified" ? allStudents.filter((s) => s.status === "Verified")
-    : allStudents.filter((s) => s.name === "Pixlabit IT");
+    filter === "all" ? source.slice(0, 10)
+    : filter === "pending" ? source.filter((s) => s.status === "Pending")
+    : filter === "verified" ? source.filter((s) => s.status === "Verified")
+    : source.filter((s) => s.name === "Pixlabit IT");
 
   return (
     <div className="space-y-4 p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-[24px] font-bold">{TITLES[filter]}</h1>
-        <button className="rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">+ Create Student</button>
+        <button className="rounded bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">+ Create Student</button>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <Stat label="TOTAL STUDENTS" value={57} tone="blue" />
@@ -69,10 +96,10 @@ export function StudentsTable({ filter }: { filter: StudentFilter }) {
                 </td>
                 <td className="px-2 py-4">
                   <div className="flex flex-wrap justify-end gap-1.5">
-                    <button className="rounded-lg border px-2.5 py-1 text-[12px] font-medium">Login As</button>
-                    <button className="rounded-lg border px-2.5 py-1 text-[12px] font-medium">Followup</button>
-                    <button className="rounded-lg border px-2.5 py-1 text-[12px] font-medium">Add to Visitor</button>
-                    <button className="rounded-lg border px-2.5 py-1 text-[12px] font-medium">Apply Now</button>
+                    <button className="rounded border px-2.5 py-1 text-[12px] font-medium">Login As</button>
+                    <button className="rounded border px-2.5 py-1 text-[12px] font-medium">Followup</button>
+                    <button className="rounded border px-2.5 py-1 text-[12px] font-medium">Add to Visitor</button>
+                    <button className="rounded border px-2.5 py-1 text-[12px] font-medium">Apply Now</button>
                   </div>
                 </td>
               </tr>

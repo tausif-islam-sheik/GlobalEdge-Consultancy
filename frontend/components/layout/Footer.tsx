@@ -41,7 +41,7 @@ export function Footer() {
         <div>
           <h4 className="font-bold text-white text-sm tracking-wide">CONTACT US</h4>
           <p className="mt-4 text-sm">Ka-7/B, Bashundhara R/A Main Road, Dhaka, Bangladesh, 1229</p>
-          <span className="mt-2 inline-flex items-center gap-1 rounded-md border border-white/20 px-3 py-1.5 text-xs"><MapPin className="size-3.5 text-brand-500" /> Google Map</span>
+          <span className="mt-2 inline-flex items-center gap-1 rounded border border-white/20 px-3 py-1.5 text-xs"><MapPin className="size-3.5 text-brand-500" /> Google Map</span>
           <div className="mt-3 grid grid-cols-2 gap-1.5 text-[13px]">
             {["+8801788521234", "+8801332106562", "+8801332106563", "+8801332106564", "+8801332106565", "+8801332106566"].map((p) => (
               <span key={p} className="flex items-center gap-1.5"><Phone className="size-3 text-brand-500" />{p}</span>

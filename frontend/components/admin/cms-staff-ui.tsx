@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 
 /* ---------- shared ---------- */
 function Card({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("rounded-xl border bg-white shadow-[0_1px_2px_rgba(0,0,0,.05)]", className)}>{children}</div>;
+  return <div className={cn("rounded border bg-white shadow-[0_1px_2px_rgba(0,0,0,.05)]", className)}>{children}</div>;
 }
 function SearchBox({ placeholder, className }: { placeholder: string; className?: string }) {
   return (
     <div className={cn("relative", className)}>
       <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-      <input placeholder={placeholder} className="w-full rounded-lg border bg-white py-2.5 pl-9 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-sky-400" />
+      <input placeholder={placeholder} className="w-full rounded border bg-white py-2.5 pl-9 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-sky-400" />
     </div>
   );
 }
@@ -22,7 +22,7 @@ function FilterSelect({ options, className, defaultValue }: { options: string[];
   const [v, setV] = useState(defaultValue ?? options[0]);
   return (
     <div className={cn("relative", className)}>
-      <select value={v} onChange={(e) => setV(e.target.value)} className="w-full appearance-none rounded-lg border bg-white px-3 py-2.5 pr-8 text-sm outline-none focus:border-sky-400">
+      <select value={v} onChange={(e) => setV(e.target.value)} className="w-full appearance-none rounded border bg-white px-3 py-2.5 pr-8 text-sm outline-none focus:border-sky-400">
         {options.map((o) => <option key={o}>{o}</option>)}
       </select>
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">⌄</span>
@@ -35,8 +35,8 @@ function FooterPager({ left, right = true }: { left: React.ReactNode; right?: bo
       <span className="flex items-center gap-2">{left}</span>
       {right && (
         <span className="flex items-center gap-2"><b className="text-slate-800">Page 1 of 1</b>
-          <button className="rounded-lg border bg-white px-3 py-1.5 text-slate-400">‹ Prev</button>
-          <button className="rounded-lg border bg-white px-3 py-1.5">Next ›</button>
+          <button className="rounded border bg-white px-3 py-1.5 text-slate-400">‹ Prev</button>
+          <button className="rounded border bg-white px-3 py-1.5">Next ›</button>
         </span>
       )}
     </div>
@@ -45,14 +45,14 @@ function FooterPager({ left, right = true }: { left: React.ReactNode; right?: bo
 function EditDelete() {
   return (
     <div className="grid grid-cols-2 gap-2">
-      <button className="flex items-center justify-center gap-1.5 rounded-lg border bg-white px-3 py-2 text-sm font-semibold"><Pencil className="size-4" /> Edit</button>
-      <button className="flex items-center justify-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600"><Trash2 className="size-4" /> Delete</button>
+      <button className="flex items-center justify-center gap-1.5 rounded border bg-white px-3 py-2 text-sm font-semibold"><Pencil className="size-4" /> Edit</button>
+      <button className="flex items-center justify-center gap-1.5 rounded bg-red-50 px-3 py-2 text-sm font-semibold text-red-600"><Trash2 className="size-4" /> Delete</button>
     </div>
   );
 }
 function Banner({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="relative h-[190px] overflow-hidden rounded-t-xl bg-gradient-to-br from-sky-600 via-indigo-700 to-slate-900 p-4 text-white">
+    <div className="relative h-[190px] overflow-hidden rounded-t bg-gradient-to-br from-sky-600 via-indigo-700 to-slate-900 p-4 text-white">
       <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(circle at 80% 20%, #fbbf24 0, transparent 40%), radial-gradient(circle at 10% 90%, #22d3ee 0, transparent 40%)" }} />
       <div className="relative text-[11px] font-bold tracking-wide text-sky-200">CREATIVE CONSULTANCY × PARTNER</div>
       <div className="relative mt-1 text-[17px] font-extrabold leading-tight">{title}</div>
@@ -76,7 +76,7 @@ export function CommissionInvoicePage() {
           { l: "DIRECT STUDENTS", v: "1", icon: <Users className="size-5 text-sky-500" /> },
         ].map((s) => (
           <Card key={s.l} className="border-sky-200 bg-sky-50/60 p-5">
-            <div className="flex items-start justify-between"><span className="text-[12px] font-medium text-slate-500">{s.l}</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100">{s.icon}</span></div>
+            <div className="flex items-start justify-between"><span className="text-[12px] font-medium text-slate-500">{s.l}</span><span className="grid size-10 place-items-center rounded bg-sky-100">{s.icon}</span></div>
             <div className="mt-1 text-[30px] font-extrabold leading-none text-sky-500">{s.v}</div>
           </Card>
         ))}
@@ -101,7 +101,7 @@ export function CommissionInvoicePage() {
           </tbody>
         </table>
       </Card>
-      <FooterPager left={<>SHOWING <span className="rounded-lg border bg-white px-3 py-1.5">20 ⌄</span> 1 approved visa student</>} />
+      <FooterPager left={<>SHOWING <span className="rounded border bg-white px-3 py-1.5">20 ⌄</span> 1 approved visa student</>} />
     </div>
   );
 }
@@ -113,9 +113,9 @@ export function AgentCommissionPage() {
       <div><h1 className="text-[24px] font-bold">Agent Commission</h1>
         <p className="text-[14px] text-slate-500">Commission invoices agents have claimed, and their payment status.</p></div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">INVOICES CLAIMED</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100"><FileText className="size-5 text-sky-500" /></span></div><div className="mt-1 text-[30px] font-extrabold text-sky-500">0</div></Card>
-        <Card className="border-green-200 bg-green-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">PAID</span><span className="grid size-10 place-items-center rounded-lg bg-green-100"><BadgeCheck className="size-5 text-green-600" /></span></div><div className="mt-1 text-[30px] font-extrabold text-green-700">0</div><span className="text-[13px] font-medium text-green-700">View →</span></Card>
-        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">PAID AMOUNT</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100"><Wallet className="size-5 text-sky-600" /></span></div><div className="mt-1 text-[30px] font-extrabold text-sky-700">$0.00</div></Card>
+        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">INVOICES CLAIMED</span><span className="grid size-10 place-items-center rounded bg-sky-100"><FileText className="size-5 text-sky-500" /></span></div><div className="mt-1 text-[30px] font-extrabold text-sky-500">0</div></Card>
+        <Card className="border-green-200 bg-green-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">PAID</span><span className="grid size-10 place-items-center rounded bg-green-100"><BadgeCheck className="size-5 text-green-600" /></span></div><div className="mt-1 text-[30px] font-extrabold text-green-700">0</div><span className="text-[13px] font-medium text-green-700">View →</span></Card>
+        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">PAID AMOUNT</span><span className="grid size-10 place-items-center rounded bg-sky-100"><Wallet className="size-5 text-sky-600" /></span></div><div className="mt-1 text-[30px] font-extrabold text-sky-700">$0.00</div></Card>
       </div>
       <div className="grid gap-2 md:grid-cols-[400px_240px]">
         <SearchBox placeholder="Search agent, student, institution, invoice..." />
@@ -127,7 +127,7 @@ export function AgentCommissionPage() {
           <tbody><tr><td colSpan={6} className="px-4 py-14 text-center text-slate-500">No agent has claimed a commission invoice yet.</td></tr></tbody>
         </table>
       </Card>
-      <FooterPager left={<>SHOWING <span className="rounded-lg border bg-white px-3 py-1.5">10 ⌄</span> 0 of 0 row(s) selected.</>} />
+      <FooterPager left={<>SHOWING <span className="rounded border bg-white px-3 py-1.5">10 ⌄</span> 0 of 0 row(s) selected.</>} />
     </div>
   );
 }
@@ -139,7 +139,7 @@ export function PostCards({ title, sub, cta, posts }: { title: string; sub: stri
     <div className="space-y-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-[26px] font-bold">{title}</h1><p className="text-[14px] text-slate-500">{sub}</p></div>
-        <button className="flex items-center gap-1 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> {cta}</button>
+        <button className="flex items-center gap-1 rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> {cta}</button>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {posts.map((p) => (
@@ -185,12 +185,12 @@ export function ReviewsPage() {
     <div className="space-y-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-[26px] font-bold">Student Reviews</h1><p className="text-[14px] text-slate-500">Manage public student testimonials shown on the website.</p></div>
-        <button className="flex items-center gap-1 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> Create Review</button>
+        <button className="flex items-center gap-1 rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> Create Review</button>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">TOTAL REVIEWS</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100">💬</span></div><div className="mt-1 text-[30px] font-extrabold text-sky-500">75</div></Card>
-        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">WITH IMAGES</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100">🖼️</span></div><div className="mt-1 text-[30px] font-extrabold text-sky-600">75</div></Card>
-        <Card className="border-green-200 bg-green-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">SHOWING</span><span className="grid size-10 place-items-center rounded-lg bg-green-100">👤</span></div><div className="mt-1 text-[30px] font-extrabold text-green-700">12</div></Card>
+        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">TOTAL REVIEWS</span><span className="grid size-10 place-items-center rounded bg-sky-100">💬</span></div><div className="mt-1 text-[30px] font-extrabold text-sky-500">75</div></Card>
+        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">WITH IMAGES</span><span className="grid size-10 place-items-center rounded bg-sky-100">🖼️</span></div><div className="mt-1 text-[30px] font-extrabold text-sky-600">75</div></Card>
+        <Card className="border-green-200 bg-green-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">SHOWING</span><span className="grid size-10 place-items-center rounded bg-green-100">👤</span></div><div className="mt-1 text-[30px] font-extrabold text-green-700">12</div></Card>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((c) => (
@@ -221,13 +221,13 @@ export function StaffPage() {
     <div className="space-y-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-[24px] font-bold">Staff Members</h1><p className="text-[14px] text-slate-500">Manage team access, roles, and staff accounts.</p></div>
-        <button className="flex items-center gap-1 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> Add Staff</button>
+        <button className="flex items-center gap-1 rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> Add Staff</button>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">TOTAL STAFF</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100">👥</span></div><div className="mt-1 text-[30px] font-extrabold text-sky-500">9</div></Card>
-        <Card className="border-green-200 bg-green-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">ACTIVE</span><span className="grid size-10 place-items-center rounded-lg bg-green-100">🧑‍💼</span></div><div className="mt-1 text-[30px] font-extrabold text-green-700">9</div></Card>
-        <Card className="border-amber-200 bg-amber-100/70 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">INACTIVE</span><span className="grid size-10 place-items-center rounded-lg bg-amber-200">🚫</span></div><div className="mt-1 text-[30px] font-extrabold text-amber-700">0</div></Card>
-        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">ROLES</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100"><ShieldCheck className="size-5 text-sky-600" /></span></div><div className="mt-1 text-[30px] font-extrabold text-sky-600">8</div></Card>
+        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">TOTAL STAFF</span><span className="grid size-10 place-items-center rounded bg-sky-100">👥</span></div><div className="mt-1 text-[30px] font-extrabold text-sky-500">9</div></Card>
+        <Card className="border-green-200 bg-green-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">ACTIVE</span><span className="grid size-10 place-items-center rounded bg-green-100">🧑‍💼</span></div><div className="mt-1 text-[30px] font-extrabold text-green-700">9</div></Card>
+        <Card className="border-amber-200 bg-amber-100/70 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">INACTIVE</span><span className="grid size-10 place-items-center rounded bg-amber-200">🚫</span></div><div className="mt-1 text-[30px] font-extrabold text-amber-700">0</div></Card>
+        <Card className="border-sky-200 bg-sky-50/60 p-5"><div className="flex justify-between"><span className="text-[12px] text-slate-500">ROLES</span><span className="grid size-10 place-items-center rounded bg-sky-100"><ShieldCheck className="size-5 text-sky-600" /></span></div><div className="mt-1 text-[30px] font-extrabold text-sky-600">8</div></Card>
       </div>
       <div className="grid gap-2 md:grid-cols-[400px_280px]">
         <SearchBox placeholder="Search staff, email, role, or status" />
@@ -269,7 +269,7 @@ export function RolesPage() {
     <div className="space-y-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-[24px] font-bold">Roles & Permissions</h1><p className="text-[14px] text-slate-500">Create custom admin staff roles with permission and menu access controls.</p></div>
-        <button className="flex items-center gap-1 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> Create Role</button>
+        <button className="flex items-center gap-1 rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Plus className="size-4" /> Create Role</button>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-5"><div className="text-[12px] text-slate-500">ROLES</div><div className="text-[26px] font-bold">7</div></Card>
@@ -288,7 +288,7 @@ export function RolesPage() {
                 <div className="flex flex-wrap items-center gap-2"><b>{r.name}</b>{r.sys && <span className="rounded-full bg-amber-400 px-2.5 py-0.5 text-[12px] font-bold">System role</span>}<span className="rounded-full border px-2.5 py-0.5 text-[12px]">{r.perms}</span><span className="rounded-full bg-amber-400 px-2.5 py-0.5 text-[12px] font-bold">{r.menus}</span></div>
                 <div className="mt-2 flex flex-wrap gap-1.5">{r.pills.map((p) => <span key={p} className="rounded-full bg-amber-400 px-2.5 py-1 text-[12px] font-semibold">{p}</span>)}<span className="rounded-full border px-2.5 py-1 text-[12px]">{r.more}</span></div>
               </div>
-              <div className="flex gap-2"><button className="flex items-center gap-1 rounded-lg border px-3 py-2 text-sm font-semibold"><Pencil className="size-4" /> Edit</button><button className="rounded-lg border p-2"><Copy className="size-4" /></button><button className="rounded-lg bg-red-50 p-2 text-red-500"><Trash2 className="size-4" /></button></div>
+              <div className="flex gap-2"><button className="flex items-center gap-1 rounded border px-3 py-2 text-sm font-semibold"><Pencil className="size-4" /> Edit</button><button className="rounded border p-2"><Copy className="size-4" /></button><button className="rounded bg-red-50 p-2 text-red-500"><Trash2 className="size-4" /></button></div>
             </div>
           ))}
         </div>
@@ -306,30 +306,30 @@ export function SettingsPage() {
     <div className="space-y-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-[26px] font-bold">System Settings</h1><p className="text-[14px] text-slate-500">Manage website content, footer contact details, media, and legal pages.</p></div>
-        <button className="flex items-center gap-1.5 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Save className="size-4" /> Save Changes</button>
+        <button className="flex items-center gap-1.5 rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white"><Save className="size-4" /> Save Changes</button>
       </div>
-      <div className="flex flex-wrap gap-1 rounded-xl bg-sky-200/70 p-1.5">
+      <div className="flex flex-wrap gap-1 rounded bg-sky-200/70 p-1.5">
         {tabs.map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={cn("flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold", tab === t ? "bg-white text-sky-600 shadow" : "text-slate-800 hover:bg-white/60")}><MapPin className={cn("size-4", tab === t && "text-sky-500")} />{t}</button>
+          <button key={t} onClick={() => setTab(t)} className={cn("flex items-center gap-1.5 rounded px-3.5 py-2 text-sm font-semibold", tab === t ? "bg-white text-sky-600 shadow" : "text-slate-800 hover:bg-white/60")}><MapPin className={cn("size-4", tab === t && "text-sky-500")} />{t}</button>
         ))}
       </div>
       <Card className="p-6">
-        <div className="flex items-start gap-3"><span className="grid size-11 place-items-center rounded-lg bg-sky-50 text-sky-500"><MapPin className="size-5" /></span>
+        <div className="flex items-start gap-3"><span className="grid size-11 place-items-center rounded bg-sky-50 text-sky-500"><MapPin className="size-5" /></span>
           <div><h2 className="text-[18px] font-bold">Footer Contact</h2><p className="text-[14px] text-slate-500">Contact information displayed in the public footer.</p></div></div>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <label className="block"><span className="mb-1.5 block text-[14px] font-semibold">Support Email</span>
-            <span className="flex items-center gap-2 rounded-lg border px-3 py-2.5"><Mail className="size-4 text-slate-400" /><input defaultValue="support@ccapply.com" className="w-full bg-transparent text-sm outline-none" /></span></label>
+            <span className="flex items-center gap-2 rounded border px-3 py-2.5"><Mail className="size-4 text-slate-400" /><input defaultValue="support@ccapply.com" className="w-full bg-transparent text-sm outline-none" /></span></label>
           <label className="block"><span className="mb-1.5 block text-[14px] font-semibold">Google Map Location Link</span>
-            <span className="flex items-center gap-2 rounded-lg border px-3 py-2.5"><MapPin className="size-4 text-slate-400" /><input defaultValue="https://maps.app.goo.gl/NG69g2jhnJ1XLwP4A" className="w-full bg-transparent text-sm outline-none" /></span>
+            <span className="flex items-center gap-2 rounded border px-3 py-2.5"><MapPin className="size-4 text-slate-400" /><input defaultValue="https://maps.app.goo.gl/NG69g2jhnJ1XLwP4A" className="w-full bg-transparent text-sm outline-none" /></span>
             <span className="mt-1 block text-[13px] text-slate-500">The public footer button opens this link in a new tab.</span></label>
         </div>
         <div className="mt-5">
-          <div className="flex items-center justify-between"><span className="text-[14px] font-semibold">Footer Phone Numbers</span><button onClick={() => setPhones((p) => [...p, ""])} className="flex items-center gap-1 rounded-lg border px-3 py-2 text-sm font-semibold"><Plus className="size-4" /> Add Phone</button></div>
+          <div className="flex items-center justify-between"><span className="text-[14px] font-semibold">Footer Phone Numbers</span><button onClick={() => setPhones((p) => [...p, ""])} className="flex items-center gap-1 rounded border px-3 py-2 text-sm font-semibold"><Plus className="size-4" /> Add Phone</button></div>
           <div className="mt-3 space-y-2.5">
             {phones.map((ph, i) => (
               <div key={i} className="flex gap-2">
-                <span className="flex flex-1 items-center gap-2 rounded-lg border px-3 py-2.5"><Phone className="size-4 text-slate-400" /><input value={ph} onChange={(e) => setPhones((p) => p.map((x, j) => (j === i ? e.target.value : x)))} className="w-full bg-transparent text-sm outline-none" /></span>
-                <button onClick={() => setPhones((p) => p.filter((_, j) => j !== i))} className="rounded-lg border p-2.5"><Trash2 className="size-4" /></button>
+                <span className="flex flex-1 items-center gap-2 rounded border px-3 py-2.5"><Phone className="size-4 text-slate-400" /><input value={ph} onChange={(e) => setPhones((p) => p.map((x, j) => (j === i ? e.target.value : x)))} className="w-full bg-transparent text-sm outline-none" /></span>
+                <button onClick={() => setPhones((p) => p.filter((_, j) => j !== i))} className="rounded border p-2.5"><Trash2 className="size-4" /></button>
               </div>
             ))}
           </div>
@@ -345,48 +345,48 @@ export function ProfilePage() {
   return (
     <div className="grid gap-4 p-4 lg:grid-cols-[340px_1fr]">
       <Card className="h-fit p-6 text-center">
-        <div className="mx-auto grid size-20 place-items-center rounded-full bg-slate-200 text-3xl">👤</div>
+        <div className="mx-auto grid size-20 place-items-center rounded-full bg-slate-200 dark:bg-white/10 text-3xl">👤</div>
         <h2 className="mt-3 text-[20px] font-bold">Dr. Eakramul Haque</h2>
         <div className="text-[14px] text-slate-500">Managing Director</div>
         <div className="text-[14px] text-slate-500">eakramulhaque.edu@gmail.com</div>
         <div className="text-[14px] text-slate-500">+880 1788521234 🟢</div>
-        <div className="mt-2 flex justify-center gap-2"><span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-0.5 text-[12px] font-bold text-sky-600">Active</span><span className="rounded-full border px-3 py-0.5 text-[12px] font-semibold">SUPER_ADMIN</span></div>
-        <button className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-lg border py-2.5 text-sm font-semibold"><Pencil className="size-4" /> Edit profile</button>
+        <div className="mt-2 flex justify-center gap-2"><span className="rounded-full border border-sky-200 dark:border-sky-400/25 bg-sky-50 dark:bg-sky-400/10 px-3 py-0.5 text-[12px] font-bold text-sky-600 dark:text-sky-400">Active</span><span className="rounded-full border px-3 py-0.5 text-[12px] font-semibold">SUPER_ADMIN</span></div>
+        <button className="mt-4 flex w-full items-center justify-center gap-1.5 rounded border py-2.5 text-sm font-semibold dark:text-zinc-200 dark:bg-white/[0.04]"><Pencil className="size-4" /> Edit profile</button>
       </Card>
       <div className="space-y-4">
-        <div className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1.5 text-sm font-semibold">
+        <div className="flex flex-wrap gap-1 rounded bg-slate-100 dark:bg-white/[0.04] p-1.5 text-sm font-semibold">
           {["Performance", "Reviews", "Overview", "Personal & Family", "Job & Education", "Documents"].map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={cn("rounded-lg px-4 py-2", tab === t ? "bg-sky-100 text-sky-600" : "text-slate-500")}>{t}</button>
+            <button key={t} onClick={() => setTab(t)} className={cn("rounded px-4 py-2", tab === t ? "bg-sky-100 dark:bg-sky-400/[0.14] text-sky-600 dark:text-sky-300" : "text-slate-500")}>{t}</button>
           ))}
         </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            { l: "STUDENTS", v: "2", icon: <GraduationCap className="size-5 text-sky-500" /> },
-            { l: "INSTITUTES", v: "0", icon: <Building2 className="size-5 text-sky-600" /> },
-            { l: "AGENTS", v: "0", icon: <UserPlus className="size-5 text-green-600" /> },
-            { l: "APPLICATIONS", v: "2", icon: <FileText className="size-5 text-amber-700" /> },
+            { l: "STUDENTS", v: "2", box: "bg-sky-100 dark:bg-sky-400/[0.14]", icon: <GraduationCap className="size-5 text-sky-500 dark:text-sky-400" />, card: "border-sky-200 dark:border-[rgba(56,189,248,0.3)] bg-sky-50/60 dark:bg-[rgba(56,189,248,0.09)]", num: "text-sky-500 dark:text-sky-400" },
+            { l: "INSTITUTES", v: "0", box: "bg-sky-100 dark:bg-sky-400/[0.14]", icon: <Building2 className="size-5 text-sky-600 dark:text-sky-400" />, card: "border-sky-200 dark:border-[rgba(56,189,248,0.3)] bg-sky-50/60 dark:bg-[rgba(56,189,248,0.09)]", num: "text-sky-500 dark:text-sky-400" },
+            { l: "AGENTS", v: "0", box: "bg-green-100 dark:bg-green-400/[0.14]", icon: <UserPlus className="size-5 text-green-600 dark:text-green-400" />, card: "border-green-200 dark:border-[rgba(34,197,94,0.28)] bg-green-50/60 dark:bg-[rgba(34,197,94,0.1)]", num: "text-green-600 dark:text-green-400" },
+            { l: "APPLICATIONS", v: "2", box: "bg-amber-100 dark:bg-amber-400/[0.14]", icon: <FileText className="size-5 text-amber-700 dark:text-amber-400" />, card: "border-amber-200 dark:border-[rgba(245,158,11,0.32)] bg-amber-50/60 dark:bg-[rgba(245,158,11,0.13)]", num: "text-amber-600 dark:text-amber-400" },
           ].map((s) => (
-            <Card key={s.l} className="border-sky-200 bg-sky-50/60 p-4"><div className="flex justify-between"><span className="text-[12px] text-slate-500">{s.l}</span><span className="grid size-10 place-items-center rounded-lg bg-sky-100">{s.icon}</span></div><div className="mt-1 text-[28px] font-extrabold text-sky-500">{s.v}</div></Card>
+            <Card key={s.l} className={`${s.card} p-4`}><div className="flex justify-between"><span className="text-[12px] text-slate-500">{s.l}</span><span className={`grid size-10 place-items-center rounded ${s.box}`}>{s.icon}</span></div><div className={`mt-1 text-[28px] font-extrabold ${s.num}`}>{s.v}</div></Card>
           ))}
         </div>
         <h3 className="text-[15px] font-bold">Recently assigned</h3>
         <div className="grid gap-4 xl:grid-cols-2">
-          <Card>
-            <div className="flex items-start justify-between border-b bg-sky-50/50 p-4"><div className="flex items-center gap-2"><span className="grid size-9 place-items-center rounded-lg bg-sky-100">👥</span><div><b>Leads</b><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></div></div><span className="text-sm font-semibold">View more →</span></div>
+          <Card className="border-t-2 border-t-sky-500/60 dark:border-t-sky-400/50">
+            <div className="flex items-start justify-between border-b bg-sky-50/50 dark:bg-white/[0.03] p-4"><div className="flex items-center gap-2"><span className="grid size-9 place-items-center rounded bg-sky-100 dark:bg-sky-400/[0.14] text-sky-500 dark:text-sky-400">👥</span><div><b>Leads</b><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></div></div><span className="text-sm font-semibold">View more →</span></div>
             <div className="divide-y">{[["sadakj sadakj", "28 Sept 2026", "New"], ["Sumaiya Jannat Rayha", "28 Sept 2026", "New"], ["Dr. NUSRAT JAHAN NISHU", "12 Sept 2026", "New"], ["MD FORHAD HOSEN", "08 Sept 2026", "New"], ["SUJAN SAMI", "23 Aug 2026", "Converted"]].map(([n, d, s]) => (
               <div key={n} className="flex items-center justify-between px-4 py-2.5"><div><div className="font-semibold">{n}</div><div className="text-[12.5px] text-slate-500">{d}</div></div><span className="rounded-full border px-2.5 py-0.5 text-[12px]">{s}</span></div>
             ))}</div>
           </Card>
-          <Card>
-            <div className="flex items-start justify-between border-b bg-green-50/50 p-4"><div className="flex items-center gap-2"><span className="grid size-9 place-items-center rounded-lg bg-green-100">👥</span><div><b>Visitors</b><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></div></div><span className="text-sm font-semibold">View more →</span></div>
+          <Card className="border-t-2 border-t-green-500/60 dark:border-t-green-400/50">
+            <div className="flex items-start justify-between border-b bg-green-50/50 dark:bg-white/[0.03] p-4"><div className="flex items-center gap-2"><span className="grid size-9 place-items-center rounded bg-green-100 dark:bg-green-400/[0.14] text-green-600 dark:text-green-400">👥</span><div><b>Visitors</b><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></div></div><span className="text-sm font-semibold">View more →</span></div>
             <div className="divide-y">{[["APPOINTMENT", "28 Sept 2026", "Scheduled"], ["PhD in Public Health", "12 Sept 2026", "Completed"], ["Low budget higher education flying wit...", "08 Sept 2026", "Scheduled"]].map(([n, d, s]) => (
               <div key={n} className="flex items-center justify-between px-4 py-2.5"><div><div className="font-semibold">{n}</div><div className="text-[12.5px] text-slate-500">{d}</div></div><span className="rounded-full border px-2.5 py-0.5 text-[12px]">{s}</span></div>
             ))}</div>
           </Card>
         </div>
         <div className="grid gap-4 xl:grid-cols-2">
-          <Card className="border-amber-300 bg-amber-50/50 p-4"><div className="flex justify-between"><b>Followups</b><span className="text-sm font-semibold">View more →</span></div><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></Card>
-          <Card className="border-violet-300 bg-violet-50/50 p-4"><div className="flex justify-between"><b>Students</b><span className="text-sm font-semibold">View more →</span></div><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></Card>
+          <Card className="border-amber-300 dark:border-amber-400/25 border-t-2 border-t-amber-500/60 dark:border-t-amber-400/50 bg-amber-50/50 dark:bg-[rgba(245,158,11,0.08)] p-4"><div className="flex justify-between"><b>Followups</b><span className="text-sm font-semibold">View more →</span></div><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></Card>
+          <Card className="border-violet-300 dark:border-violet-400/25 border-t-2 border-t-violet-500/60 dark:border-t-violet-400/50 bg-violet-50/50 dark:bg-violet-400/[0.08] p-4"><div className="flex justify-between"><b>Students</b><span className="text-sm font-semibold">View more →</span></div><div className="text-[13px] text-slate-500">Most recent 5 assigned</div></Card>
         </div>
       </div>
     </div>
@@ -406,20 +406,20 @@ export function ChangePasswordPage() {
     <div className="mx-auto max-w-[820px] space-y-4 p-4">
       <div><h1 className="text-[26px] font-bold">Change Password</h1><p className="text-[14px] text-slate-500">Update the password you use to access your admin account.</p></div>
       <Card className="overflow-hidden">
-        <div className="flex items-start gap-3 border-b p-5"><span className="grid size-11 place-items-center rounded-lg bg-sky-50 text-sky-500"><ShieldCheck className="size-5" /></span>
+        <div className="flex items-start gap-3 border-b p-5"><span className="grid size-11 place-items-center rounded bg-sky-50 text-sky-500"><ShieldCheck className="size-5" /></span>
           <div><h2 className="text-[17px] font-bold">Security</h2><p className="text-[14px] text-slate-500">Choose a strong password that you do not use elsewhere.</p></div></div>
         <div className="space-y-4 p-5">
           {fields.map((f, i) => (
             <label key={f.label} className="block">
               <span className="mb-1.5 block text-[14px] font-semibold">{f.label}</span>
-              <span className="flex items-center gap-2 rounded-lg border px-3 py-2.5">
+              <span className="flex items-center gap-2 rounded border px-3 py-2.5">
                 <input type={show[i] ? "text" : "password"} placeholder={f.ph} className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400" />
                 <button type="button" onClick={() => toggle(i)}><Eye className="size-4 text-slate-400" /></button>
               </span>
               {f.hint && <span className="mt-1 block text-[13px] text-slate-500">{f.hint}</span>}
             </label>
           ))}
-          <div className="flex justify-end"><button className="rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">Update Password</button></div>
+          <div className="flex justify-end"><button className="rounded bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">Update Password</button></div>
         </div>
       </Card>
     </div>

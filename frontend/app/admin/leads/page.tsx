@@ -17,10 +17,10 @@ export default function LeadsPage() {
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
           {TABS.map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={cn("rounded-lg border bg-white px-3 py-2 font-medium", tab === t && "bg-sky-600 text-white border-sky-600")}>{t}</button>
+            <button key={t} onClick={() => setTab(t)} className={cn("rounded border bg-white px-3 py-2 font-medium", tab === t && "bg-sky-600 text-white border-sky-600")}>{t}</button>
           ))}
-          <button className="rounded-lg border bg-white px-3 py-2 font-medium">Get Lead Link</button>
-          <button className="rounded-lg bg-sky-600 px-3 py-2 font-semibold text-white">Add Lead</button>
+          <button className="rounded border bg-white px-3 py-2 font-medium">Get Lead Link</button>
+          <button className="rounded bg-sky-600 px-3 py-2 font-semibold text-white">Add Lead</button>
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -65,8 +65,8 @@ export default function LeadsPage() {
                 <td className="px-2 py-4">
                   <div className="flex flex-col items-end gap-1.5">
                     <Select className="w-[150px]"><option>Change status</option></Select>
-                    <button className="rounded-lg border px-3 py-1.5 text-[12.5px] font-medium">Add to Visitor</button>
-                    <button className="rounded-lg border px-3 py-1.5 text-[12.5px] font-medium text-sky-600">✓ Convert</button>
+                    <button className="rounded border px-3 py-1.5 text-[12.5px] font-medium">Add to Visitor</button>
+                    <button className="rounded border px-3 py-1.5 text-[12.5px] font-medium text-sky-600">✓ Convert</button>
                   </div>
                 </td>
               </tr>

@@ -2,54 +2,68 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Clock, GraduationCap, FileText, Briefcase, ArrowRight, Bell, Check, ChevronDown, CircleAlert, ArrowUpRight } from "lucide-react";
-import { adminCounts, recentApplications, notifications, newAccounts, recentActivities, funnelSteps } from "./admin-data";
+import { adminCounts as fallbackCounts, recentApplications, notifications, newAccounts, recentActivities, funnelSteps } from "./admin-data";
+import { useLive } from "@/lib/api";
+import { API_URL } from "@/lib/utils";
+
+async function getOverview() {
+  try {
+    const res = await fetch(`${API_URL}/admin/overview`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return (await res.json()) as { users: number; applications: number; institutions: number; programs: number };
+  } catch { return null; }
+}
 import { cn } from "@/lib/utils";
 
 function Card({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("rounded-xl border bg-white shadow-[0_1px_2px_rgba(0,0,0,.05)]", className)}>{children}</div>;
+  return <div className={cn("rounded border border-slate-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,.05)] dark:border-white/[0.07] dark:bg-[#121214] dark:shadow-none", className)}>{children}</div>;
 }
 
 function StatCards() {
+  const overview = useLive(getOverview, null);
+  const adminCounts = overview && !("demo" in overview)
+    ? { ...fallbackCounts, totalStudents: overview.users, totalApplications: overview.applications }
+    : fallbackCounts;
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <Card className="bg-[#eaf5ec] border-[#cde6d2] p-5">
+      <Card className="bg-[#eaf5ec] border-[#cde6d2] p-5 dark:bg-[rgba(34,197,94,0.1)] dark:border-[rgba(34,197,94,0.28)]">
         <div className="flex items-start justify-between">
           <span className="text-[12px] font-medium tracking-wide text-slate-500">ON PROCESSING</span>
-          <span className="grid size-10 place-items-center rounded-lg bg-[#cde6d2] text-green-700"><Clock className="size-5" /></span>
+          <span className="grid size-10 place-items-center rounded bg-[#cde6d2] text-green-700 dark:bg-green-400/[0.14] dark:text-green-400"><Clock className="size-5" /></span>
         </div>
-        <div className="mt-1 text-[34px] leading-none font-extrabold text-green-700">{adminCounts.onProcessing}</div>
+        <div className="mt-1 text-[34px] leading-none font-extrabold text-green-700 dark:text-green-400">{adminCounts.onProcessing}</div>
       </Card>
-      <Card className="bg-[#eaf5fb] border-[#cde8f5] p-5">
+      <Card className="bg-[#eaf5fb] border-[#cde8f5] p-5 dark:bg-[rgba(56,189,248,0.09)] dark:border-[rgba(56,189,248,0.3)]">
         <div className="flex items-start justify-between">
           <span className="text-[12px] font-medium tracking-wide text-slate-500">TOTAL STUDENTS</span>
-          <span className="grid size-10 place-items-center rounded-lg bg-[#cde8f5] text-sky-600"><GraduationCap className="size-5" /></span>
+          <span className="grid size-10 place-items-center rounded bg-[#cde8f5] text-sky-600 dark:bg-sky-400/[0.14] dark:text-sky-400"><GraduationCap className="size-5" /></span>
         </div>
-        <div className="mt-1 text-[34px] leading-none font-extrabold text-[#1d8fc2]">{adminCounts.totalStudents}</div>
-        <div className="mt-4 space-y-1.5 border-t border-sky-200/60 pt-3 text-[13px]">
+        <div className="mt-1 text-[34px] leading-none font-extrabold text-[#1d8fc2] dark:text-sky-400">{adminCounts.totalStudents}</div>
+        <div className="mt-4 space-y-1.5 border-t border-sky-200/60 dark:border-white/[0.07] pt-3 text-[13px]">
           <div className="flex justify-between"><span className="text-slate-500">Student Agent:</span><span>0 <Link href="/admin/students" className="text-sky-600 font-medium">View →</Link></span></div>
           <div className="flex justify-between"><span className="text-slate-500">Corporate Agent:</span><span>4 <Link href="/admin/students" className="text-sky-600 font-medium">View →</Link></span></div>
           <Link href="/admin/students" className="inline-flex items-center gap-1 pt-1 text-sky-600 font-medium">View <ArrowRight className="size-3.5" /></Link>
         </div>
       </Card>
-      <Card className="bg-[#fdf3d7] border-[#f3e0a8] p-5">
+      <Card className="bg-[#fdf3d7] border-[#f3e0a8] p-5 dark:bg-[rgba(245,158,11,0.13)] dark:border-[rgba(245,158,11,0.32)]">
         <div className="flex items-start justify-between">
           <span className="text-[12px] font-medium tracking-wide text-slate-500">TOTAL APPLICATIONS</span>
-          <span className="grid size-10 place-items-center rounded-lg bg-[#f3e0a8] text-amber-700"><FileText className="size-5" /></span>
+          <span className="grid size-10 place-items-center rounded bg-[#f3e0a8] text-amber-700 dark:bg-amber-400/[0.14] dark:text-amber-400"><FileText className="size-5" /></span>
         </div>
-        <div className="mt-1 text-[34px] leading-none font-extrabold text-amber-700">{adminCounts.totalApplications}</div>
-        <div className="mt-4 space-y-1.5 border-t border-amber-200/70 pt-3 text-[13px]">
+        <div className="mt-1 text-[34px] leading-none font-extrabold text-amber-700 dark:text-amber-400">{adminCounts.totalApplications}</div>
+        <div className="mt-4 space-y-1.5 border-t border-amber-200/70 dark:border-white/[0.07] pt-3 text-[13px]">
           <div className="flex justify-between"><span className="text-slate-500">Student Agent:</span><span>0 <Link href="/admin/applications" className="text-amber-700 font-medium">View →</Link></span></div>
           <div className="flex justify-between"><span className="text-slate-500">Corporate Agent:</span><span>0 <Link href="/admin/applications" className="text-amber-700 font-medium">View →</Link></span></div>
           <Link href="/admin/applications" className="inline-flex items-center gap-1 pt-1 text-amber-700 font-medium">View <ArrowRight className="size-3.5" /></Link>
         </div>
       </Card>
-      <Card className="bg-[#fdecec] border-[#f5cdcd] p-5">
+      <Card className="bg-[#fdecec] border-[#f5cdcd] p-5 dark:bg-[rgba(248,113,113,0.09)] dark:border-[rgba(248,113,113,0.28)]">
         <div className="flex items-start justify-between">
           <span className="text-[12px] font-medium tracking-wide text-slate-500">TOTAL AGENTS</span>
-          <span className="grid size-10 place-items-center rounded-lg bg-[#f5cdcd] text-red-500"><Briefcase className="size-5" /></span>
+          <span className="grid size-10 place-items-center rounded bg-[#f5cdcd] text-red-500 dark:bg-red-400/[0.14] dark:text-red-400"><Briefcase className="size-5" /></span>
         </div>
-        <div className="mt-1 text-[34px] leading-none font-extrabold text-red-500">{adminCounts.totalAgents}</div>
-        <div className="mt-4 space-y-1.5 border-t border-red-200/70 pt-3 text-[13px]">
+        <div className="mt-1 text-[34px] leading-none font-extrabold text-red-500 dark:text-red-400">{adminCounts.totalAgents}</div>
+        <div className="mt-4 space-y-1.5 border-t border-red-200/70 dark:border-white/[0.07] pt-3 text-[13px]">
           <div className="flex justify-between"><span className="text-slate-500">Student Agent:</span><span>1 <Link href="/admin/agents" className="text-red-500 font-medium">View →</Link></span></div>
           <div className="flex justify-between"><span className="text-slate-500">Corporate Agent:</span><span>7 <Link href="/admin/agents" className="text-red-500 font-medium">View →</Link></span></div>
           <Link href="/admin/agents" className="inline-flex items-center gap-1 pt-1 text-red-500 font-medium">View <ArrowRight className="size-3.5" /></Link>
@@ -70,7 +84,7 @@ function RegistrationsChart() {
           <h3 className="font-semibold text-[16px]">Student Registrations</h3>
           <p className="text-[13px] text-slate-500">Monthly • 57 total</p>
         </div>
-        <button className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm">Monthly <ChevronDown className="size-4" /></button>
+        <button className="flex items-center gap-2 rounded border px-3 py-2 text-sm">Monthly <ChevronDown className="size-4" /></button>
       </div>
       <div className="relative border-t px-2 pb-2">
         <svg viewBox="0 0 600 235" className="w-full h-[240px]">
@@ -87,9 +101,9 @@ function RegistrationsChart() {
           <path d={line} fill="none" stroke="#29a9e1" strokeWidth="2" strokeLinejoin="round" />
           <circle cx="300" cy="30" r="5" fill="#29a9e1" stroke="#fff" strokeWidth="2" />
         </svg>
-        <div className="absolute left-[48%] top-[52%] rounded-lg border bg-white px-3 py-2 text-[12px] shadow-lg">
+        <div className="absolute left-[48%] top-[52%] rounded border bg-white px-3 py-2 text-[12px] shadow-lg">
           <div className="font-semibold">Apr 2026</div>
-          <div className="flex items-center gap-1.5"><span className="size-2.5 rounded-sm bg-[#29a9e1]" /> Student registrations <b>16</b></div>
+          <div className="flex items-center gap-1.5"><span className="size-2.5 rounded bg-[#29a9e1]" /> Student registrations <b>16</b></div>
         </div>
       </div>
     </Card>
@@ -121,7 +135,7 @@ function Funnel() {
           <h3 className="font-semibold text-[16px]">Application Conversion Funnel</h3>
           <p className="text-[13px] text-slate-500">Student progress from registration through accepted applications</p>
         </div>
-        <div className="rounded-lg border-l-4 border-l-green-500 bg-green-50 px-4 py-2 text-right">
+        <div className="rounded border-l-4 border-l-green-500 bg-green-50 px-4 py-2 text-right">
           <div className="text-[12px] text-slate-500">Accepted conversion</div>
           <div className="text-[20px] font-bold">23%</div>
         </div>
@@ -131,7 +145,7 @@ function Funnel() {
           {funnelSteps.map((s) => (
             <div key={s.label} className="grid grid-cols-[150px_1fr_30px] items-center gap-3 text-[13px]">
               <span className="text-right text-slate-500">{s.label}</span>
-              <div className="h-[38px] rounded-r-lg rounded-l-sm" style={{ width: `${Math.max((s.value / max) * 100, s.value === 0 ? 2 : 8)}%`, background: s.color }} />
+              <div className="h-[38px] rounded-r rounded-l" style={{ width: `${Math.max((s.value / max) * 100, s.value === 0 ? 2 : 8)}%`, background: s.color }} />
               <span className="font-medium">{s.value}</span>
             </div>
           ))}
@@ -144,7 +158,7 @@ function Funnel() {
             { t: "Accepted Applications", p: "0%", c: "green" },
           ].map((x) => (
             <div key={x.t} className={cn(
-              "rounded-lg border-l-4 bg-slate-50 p-3",
+              "rounded border-l-4 bg-slate-50 p-3",
               x.c === "green" && "border-l-green-500 bg-green-50/60",
               x.c === "blue" && "border-l-blue-500 bg-blue-50/60",
               x.c === "amber" && "border-l-amber-500 bg-amber-50/60",
@@ -171,7 +185,7 @@ function Notifications() {
             <p className="text-[13px] text-slate-500">New students, applications, offer letters, tuition payments, and flight dates.</p>
           </div>
         </div>
-        <button onClick={() => setRead(true)} className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium">
+        <button onClick={() => setRead(true)} className="flex items-center gap-1.5 rounded border px-3 py-2 text-sm font-medium">
           <Check className="size-4" /> Mark all read ({read ? 0 : 8})
         </button>
       </div>
@@ -207,16 +221,16 @@ function OnProcess() {
           <h3 className="font-semibold text-[18px]">On Process</h3>
           <p className="text-[13px] text-slate-500">Applications with payment complete and visa processing underway.</p>
         </div>
-        <Link href="/admin/applications" className="flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold">View <ArrowRight className="size-4" /></Link>
+        <Link href="/admin/applications" className="flex items-center gap-1.5 rounded border px-4 py-2 text-sm font-semibold">View <ArrowRight className="size-4" /></Link>
       </div>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full text-[14px]">
           <thead>
             <tr className="bg-slate-50 text-[12px] tracking-wide text-slate-500">
-              <th className="rounded-l-lg px-4 py-2.5 text-left font-medium"></th>
+              <th className="rounded-l px-4 py-2.5 text-left font-medium"></th>
               <th className="px-4 py-2.5 text-right font-medium">SEPTEMBER</th>
               <th className="px-4 py-2.5 text-right font-medium">AUGUST</th>
-              <th className="rounded-r-lg px-4 py-2.5 text-right font-medium">OVERALL</th>
+              <th className="rounded-r px-4 py-2.5 text-right font-medium">OVERALL</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -257,7 +271,7 @@ function NeedsAttention() {
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {items.map((x) => (
-          <div key={x.l} className="rounded-xl border bg-white p-4">
+          <div key={x.l} className="rounded border bg-white p-4">
             <div className="text-[24px] font-bold">{x.v}</div>
             <div className="text-[13.5px] text-slate-500">{x.l}</div>
             <Link href="/admin/search" className="mt-1 inline-flex items-center gap-1 text-[13.5px] font-medium text-sky-600">View <ArrowRight className="size-3.5" /></Link>
@@ -323,11 +337,11 @@ function NewAccounts() {
       <p className="text-[13px] text-slate-500">Recently added students, agents, and institutions.</p>
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         {cols.map((c) => (
-          <div key={c.title} className="rounded-xl border p-4">
+          <div key={c.title} className="rounded border p-4">
             <h4 className="mb-3 font-semibold">{c.title}</h4>
             <div className="space-y-2.5">
               {c.items.map((a) => (
-                <Link key={a.name} href="/admin/search" className="flex items-center gap-2 rounded-lg border px-3 py-2.5 hover:border-sky-300">
+                <Link key={a.name} href="/admin/search" className="flex items-center gap-2 rounded border px-3 py-2.5 hover:border-sky-300">
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-semibold text-[14px]">{a.name}</span>
                     <span className="block truncate text-[12px] text-slate-500">{a.sub}</span>
@@ -356,7 +370,7 @@ function RecentActivities() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-[14px]">{a.action}</span>
-                <span className="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-600">USER</span>
+                <span className="rounded bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-600">USER</span>
               </div>
               <p className="text-[13.5px] text-slate-500">{a.desc}</p>
             </div>
@@ -387,7 +401,7 @@ export function AdminDashboard() {
       <RecentApplications />
       <NewAccounts />
       <RecentActivities />
-      <Link href="/admin/search" className="flex items-center justify-center gap-2 rounded-xl border bg-white py-3 text-[13px] text-slate-500">
+      <Link href="/admin/search" className="flex items-center justify-center gap-2 rounded border bg-white py-3 text-[13px] text-slate-500">
         End of dashboard — open Search for full reports <ArrowUpRight className="size-4" />
       </Link>
     </div>

@@ -1,13 +1,18 @@
 "use client";
 import Link from "next/link";
 import { Heart, Scale, Clock, CalendarDays, Building2, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { programs } from "@/lib/data";
+import { programs as fallbackPrograms } from "@/lib/data";
+import { getPrograms, useLive } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 export function PopularPrograms() {
   const [wish, setWish] = useState<string[]>([]);
+  const live = useLive(getPrograms, []);
+  const programs = live.length
+    ? live.map((p, i) => ({ ...fallbackPrograms[i % fallbackPrograms.length], ...p, slug: String(p.slug ?? p.id) }))
+    : fallbackPrograms;
   return (
     <section className="container py-12">
       <h2 className="text-center text-3xl md:text-4xl font-extrabold text-navy-900">Most Popular Programs for Education Abroad from <span className="text-brand-500">Bangladesh</span></h2>
@@ -15,7 +20,7 @@ export function PopularPrograms() {
       <div className="relative mt-8">
         <div className="grid gap-5">
           {programs.slice(0, 1).map((p) => (
-            <article key={p.slug} className="grid overflow-hidden rounded-xl border shadow-soft md:grid-cols-[280px_1fr]">
+            <article key={p.slug} className="grid overflow-hidden rounded border shadow-soft md:grid-cols-[280px_1fr]">
               <div className="relative h-52 md:h-full bg-slate-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80" alt={p.title} className="absolute inset-0 h-full w-full object-cover" />
@@ -28,7 +33,7 @@ export function PopularPrograms() {
                     <h3 className="mt-2 font-semibold text-navy-900">{p.title}</h3>
                     <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Building2 className="size-4" /> {p.university} · MY {p.country}</p>
                   </div>
-                  <button aria-label="wishlist" onClick={() => setWish((w) => (w.includes(p.slug) ? w.filter((x) => x !== p.slug) : [...w, p.slug]))} className={`grid size-10 shrink-0 place-items-center rounded-lg border ${wish.includes(p.slug) ? "text-rose-500 border-rose-200 bg-rose-50" : ""}`}><Heart className="size-5" /></button>
+                  <button aria-label="wishlist" onClick={() => setWish((w) => (w.includes(p.slug) ? w.filter((x) => x !== p.slug) : [...w, p.slug]))} className={`grid size-10 shrink-0 place-items-center rounded border ${wish.includes(p.slug) ? "text-rose-500 border-rose-200 bg-rose-50" : ""}`}><Heart className="size-5" /></button>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3 border-t pt-4 text-sm">
                   <span><span className="flex items-center gap-1 text-xs text-slate-500"><Clock className="size-3.5" /> Duration</span><b>{p.duration}</b></span>

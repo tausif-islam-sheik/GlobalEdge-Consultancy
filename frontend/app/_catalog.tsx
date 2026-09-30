@@ -1,4 +1,4 @@
-import { countries, institutions, programs } from "@/lib/data";
+import { getCountries, getUniversities, getPrograms } from "@/lib/api-server";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,27 +12,34 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export function catalogPage(kind: string) {
-  if (kind === "countries")
+const COLORS = ["#e8821a", "#b3123f", "#a4123f", "#e8a020", "#174a8b", "#0ea5e9", "#e11d48", "#166534"];
+
+export async function catalogPage(kind: string) {
+  if (kind === "countries") {
+    const countries = await getCountries();
     return (
       <Section title="Countries">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {countries.map((c) => (
-            <Card key={c.slug}><CardContent><b>{c.name}</b><p className="text-sm text-slate-500">{c.tag}</p><Link href={`/countries/${c.slug}`}><Button className="mt-3" >View</Button></Link></CardContent></Card>
+            <Card key={c.slug}><CardContent><b>{c.name}</b><p className="text-sm text-slate-500">{c.tag ?? c.isoCode ?? ""}</p><Link href={`/countries/${c.slug}`}><Button className="mt-3" >View</Button></Link></CardContent></Card>
           ))}
         </div>
       </Section>
     );
-  if (kind === "institutions")
+  }
+  if (kind === "institutions") {
+    const institutions = await getUniversities();
     return (
       <Section title="Institutions">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {institutions.map((u) => (
-            <Card key={u.short}><CardContent><b style={{ color: u.color }}>{u.short}</b><p className="text-sm text-slate-500">{u.name}</p></CardContent></Card>
+          {institutions.map((u, i) => (
+            <Card key={u.slug}><CardContent><b style={{ color: u.color ?? COLORS[i % COLORS.length] }}>{u.short ?? u.shortName ?? u.name}</b><p className="text-sm text-slate-500">{u.name}</p></CardContent></Card>
           ))}
         </div>
       </Section>
     );
+  }
+  const programs = await getPrograms();
   return (
     <Section title={kind[0].toUpperCase() + kind.slice(1)}>
       <div className="grid gap-4">

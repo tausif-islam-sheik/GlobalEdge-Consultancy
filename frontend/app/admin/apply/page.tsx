@@ -16,7 +16,7 @@ export default function ApplyPage() {
           <h1 className="text-[22px] font-bold text-sky-600">Apply for Student</h1>
           <p className="text-[13.5px] text-slate-500">Select a student and complete the application process without leaving the admin panel.</p>
         </div>
-        <button className="rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">Add Student and Apply</button>
+        <button className="rounded bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">Add Student and Apply</button>
       </PageCard>
 
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -25,7 +25,7 @@ export default function ApplyPage() {
           <p className="text-[13.5px] text-slate-500">Choose the student whose application you want to create.</p>
         </div>
         <div className="w-full sm:w-[320px]">
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search students, email, ID..." className="w-full rounded-lg border bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-400" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search students, email, ID..." className="w-full rounded border bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-400" />
         </div>
       </div>
 
@@ -65,7 +65,7 @@ export default function ApplyPage() {
                 <td className="px-4 py-4"><span className="block font-semibold">{s.counsellor}</span><span className="block text-slate-500">{s.counsRole}</span><span className="block text-slate-500">{s.counsPhone}</span></td>
                 <td className="px-4 py-4"><Pill>Verified</Pill><div className="mt-1 text-slate-500">{s.app}</div><div className="text-slate-500">{s.docs}</div></td>
                 <td className="px-4 py-4 text-right">
-                  <button className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white ring-4 ring-sky-100"><FilePlus2 className="size-4" /> Apply</button>
+                  <button className="inline-flex items-center gap-1.5 rounded bg-sky-600 px-4 py-2 text-sm font-semibold text-white ring-4 ring-sky-100"><FilePlus2 className="size-4" /> Apply</button>
                 </td>
               </tr>
             ))}

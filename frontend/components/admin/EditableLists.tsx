@@ -11,22 +11,22 @@ function EditableList({ title, desc, items, placeholder }: { title: string; desc
   const [editVal, setEditVal] = useState("");
   return (
     <div className="mx-auto max-w-[880px] p-4">
-      <h1 className="text-[24px] font-bold">{title}</h1>
-      <p className="text-[13.5px] text-slate-500">{desc}</p>
+      <h1 className="text-[28px] font-bold text-slate-900">{title}</h1>
+      <p className="mt-0.5 text-[15px] text-slate-500">{desc}</p>
       <PageCard className="mt-4 space-y-2.5 p-4">
         {list.map((x, i) => (
-          <div key={x + i} className="flex items-center gap-2 rounded-lg border px-4 py-3">
+          <div key={x + i} className="flex items-center gap-2 rounded border bg-white px-4 py-3">
             {edit === i ? (
               <>
                 <input value={editVal} onChange={(e) => setEditVal(e.target.value)} className={inputCls} />
-                <button onClick={() => { setList((p) => p.map((v, j) => (j === i ? editVal || v : v))); setEdit(null); }} className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white">Save</button>
-                <button onClick={() => setEdit(null)} className="rounded-lg border px-3 py-2 text-sm">Cancel</button>
+                <button onClick={() => { setList((p) => p.map((v, j) => (j === i ? editVal || v : v))); setEdit(null); }} className="rounded bg-sky-600 px-3 py-2 text-sm font-semibold text-white">Save</button>
+                <button onClick={() => setEdit(null)} className="rounded border px-3 py-2 text-sm">Cancel</button>
               </>
             ) : (
               <>
-                <span className="flex-1 text-[14px] font-medium">{x}</span>
-                <button onClick={() => { setEdit(i); setEditVal(x); }} className="p-1.5" aria-label="edit"><Pencil className="size-4" /></button>
-                <button onClick={() => setList((p) => p.filter((_, j) => j !== i))} className="p-1.5 text-red-500" aria-label="delete"><Trash2 className="size-4" /></button>
+                <span className="flex-1 text-[15px] font-medium text-slate-900">{x}</span>
+                <button onClick={() => { setEdit(i); setEditVal(x); }} className="p-1.5 hover:bg-slate-100 rounded" aria-label="edit"><Pencil className="size-4" /></button>
+                <button onClick={() => setList((p) => p.filter((_, j) => j !== i))} className="p-1.5 text-red-500 hover:bg-red-50 rounded" aria-label="delete"><Trash2 className="size-4" /></button>
               </>
             )}
           </div>
@@ -34,7 +34,7 @@ function EditableList({ title, desc, items, placeholder }: { title: string; desc
         {placeholder && (
           <div className="flex gap-2">
             <input value={val} onChange={(e) => setVal(e.target.value)} placeholder={placeholder} className={inputCls} />
-            <button onClick={() => { if (val.trim()) { setList((p) => [...p, val.trim()]); setVal(""); } }} className="flex items-center gap-1 rounded-lg border px-4 py-2 text-sm font-medium text-slate-500"><Plus className="size-4" /> Add</button>
+            <button onClick={() => { if (val.trim()) { setList((p) => [...p, val.trim()]); setVal(""); } }} className="flex items-center gap-1 rounded border px-4 py-2 text-sm font-medium text-slate-500"><Plus className="size-4" /> Add</button>
           </div>
         )}
       </PageCard>
@@ -43,11 +43,11 @@ function EditableList({ title, desc, items, placeholder }: { title: string; desc
 }
 
 export function FacultiesList() {
-  return <EditableList title="Faculties" desc="Manage the shared list of faculties available when creating or editing a program." items={seed} />;
+  return <EditableList title="Faculties" desc="Manage the shared list of faculties available when creating or editing a program." items={seed} placeholder="e.g. Faculty of Business" />;
 }
 export function LevelsList() {
   return <EditableList title="Study Levels" desc="Manage the shared list of study levels (degree levels) available when creating or editing a program." items={studyLevels} placeholder="e.g. Master's Degree (Postgraduate)" />;
 }
 export function DurationsList() {
-  return <EditableList title="Durations" desc="Manage the shared list of durations available when creating or editing a program." items={durations} />;
+  return <EditableList title="Durations" desc="Manage the shared list of durations available when creating or editing a program." items={durations} placeholder="e.g. 12 Months" />;
 }

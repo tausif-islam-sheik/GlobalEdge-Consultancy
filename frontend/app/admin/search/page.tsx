@@ -12,12 +12,12 @@ export default function SearchPage() {
     <div className="flex gap-4 p-4">
       <PageCard className="hidden w-[300px] shrink-0 self-start p-4 md:block">
         <h3 className="font-bold">Filter programs</h3>
-        <div className="mt-3 grid grid-cols-2 rounded-lg bg-sky-200/70 p-1 text-sm font-medium">
+        <div className="mt-3 grid grid-cols-2 rounded bg-sky-200/70 p-1 text-sm font-medium">
           {(["Programs", "Institutions"] as const).map((m) => (
-            <button key={m} onClick={() => setMode(m)} className={mode === m ? "rounded-md bg-white px-3 py-2 text-sky-600 shadow" : "px-3 py-2"}>{m}</button>
+            <button key={m} onClick={() => setMode(m)} className={mode === m ? "rounded bg-white px-3 py-2 text-sky-600 shadow" : "px-3 py-2"}>{m}</button>
           ))}
         </div>
-        <input placeholder="Search program, institution, fi" className="mt-3 w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:border-sky-400" />
+        <input placeholder="Search program, institution, fi" className="mt-3 w-full rounded border px-3 py-2.5 text-sm outline-none focus:border-sky-400" />
         <div className="mt-4 space-y-3 border-t pt-4 text-sm">
           {[["Destination", "All countries"], ["Institution", "All institutions"], ["Study level", "All levels"], ["Field of study", "All fields"], ["Course duration", "Any duration"]].map(([l, p]) => (
             <div key={l}>
@@ -54,7 +54,7 @@ export default function SearchPage() {
                       <span className="rounded-full border px-2.5 py-1">On-campus</span>
                       {i === 0 && <span className="rounded-full bg-amber-500 px-2.5 py-1 font-semibold text-white">★ Featured</span>}
                     </div>
-                    <button className="rounded-lg border p-2"><Heart className={`size-4 ${i === 1 ? "fill-red-500 text-red-500" : ""}`} /></button>
+                    <button className="rounded border p-2"><Heart className={`size-4 ${i === 1 ? "fill-red-500 text-red-500" : ""}`} /></button>
                   </div>
                   <h3 className="mt-2 font-bold leading-snug">{p.title}</h3>
                   <p className="text-[13px] text-slate-500">🏛 {p.inst} · {p.loc}</p>
@@ -67,7 +67,7 @@ export default function SearchPage() {
                     <div><div className="text-slate-500">Application fee</div><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px]">Contact CCApply</span></div>
                     <div><div className="text-slate-500">Tuition fee (per year)</div><div className="font-bold">{p.fee}</div></div>
                     <div><div className="text-slate-500">Total cost (estimated)</div><div className="font-bold">{p.fee}</div></div>
-                    <button className="rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">Manage program</button>
+                    <button className="rounded bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white">Manage program</button>
                   </div>
                 </div>
               </div>

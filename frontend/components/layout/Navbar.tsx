@@ -46,13 +46,13 @@ export function Navbar() {
           {user ? (
             <>
               <span className="hidden md:block max-w-[160px] truncate text-xs font-medium text-slate-500">{user.email}</span>
-              <Link href={dashboardFor(user.role)}><Button variant="outline" size="sm" className="h-10 px-5 rounded-md font-semibold">Dashboard</Button></Link>
-              <Button size="sm" onClick={logout} className="h-10 px-5 rounded-md font-semibold bg-navy-900 hover:bg-navy-800"><LogOut /> Logout</Button>
+              <Link href={dashboardFor(user.role)}><Button variant="outline" size="sm" className="h-10 px-5 rounded font-semibold">Dashboard</Button></Link>
+              <Button size="sm" onClick={logout} className="h-10 px-5 rounded font-semibold bg-navy-900 hover:bg-navy-800"><LogOut /> Logout</Button>
             </>
           ) : (
             <>
-              <Link href="/auth/register"><Button variant="outline" size="sm" className="h-10 px-5 rounded-md font-semibold">Register</Button></Link>
-              <Link href="/auth/login"><Button size="sm" className="h-10 px-7 rounded-md font-semibold">Login</Button></Link>
+              <Link href="/auth/register"><Button variant="outline" size="sm" className="h-10 px-5 rounded font-semibold">Register</Button></Link>
+              <Link href="/auth/login"><Button size="sm" className="h-10 px-7 rounded font-semibold">Login</Button></Link>
             </>
           )}
         </div>

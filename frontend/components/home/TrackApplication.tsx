@@ -26,10 +26,10 @@ export function TrackApplication() {
     <section className="container py-8">
       <Card className="grid overflow-hidden lg:grid-cols-2">
         <div className="p-7">
-          <span className="grid size-12 place-items-center rounded-lg bg-brand-500 text-white"><FileSearch /></span>
+          <span className="grid size-12 place-items-center rounded bg-brand-500 text-white"><FileSearch /></span>
           <h3 className="mt-3 text-2xl font-semibold text-slate-900">Check your Application Status</h3>
           <p className="mt-1 text-sm text-slate-500">Track their latest application updates using their passport number.</p>
-          {result && <p className="mt-3 rounded-md bg-brand-50 px-3 py-2 text-sm font-medium text-navy-900">{result}</p>}
+          {result && <p className="mt-3 rounded bg-brand-50 px-3 py-2 text-sm font-medium text-navy-900">{result}</p>}
         </div>
         <div className="border-t lg:border-t-0 lg:border-l p-7">
           <label className="text-sm font-semibold">Passport number</label>

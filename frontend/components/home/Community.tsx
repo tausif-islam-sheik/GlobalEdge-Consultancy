@@ -9,7 +9,7 @@ export function Community() {
         <div className="mt-4 flex justify-center gap-4">
           <Facebook /><Instagram /><MessageCircle /><Youtube />
         </div>
-        <div className="mx-auto mt-8 flex max-w-3xl flex-col sm:flex-row items-center gap-6 rounded-2xl bg-white p-6 text-left text-navy-900 shadow-xl">
+        <div className="mx-auto mt-8 flex max-w-3xl flex-col sm:flex-row items-center gap-6 rounded bg-white p-6 text-left text-navy-900 shadow-xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&q=80" alt="community" className="size-28 rounded-full object-cover" />
           <div>

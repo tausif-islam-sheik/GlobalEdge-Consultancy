@@ -13,7 +13,7 @@ export function FavoriteInstitutions() {
       <h2 className="text-center text-3xl md:text-4xl font-extrabold text-navy-900">Students&apos; Favorite <span className="text-brand-500">Top Institutions</span> for Higher Education from Bangladesh</h2>
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         {cards.map((c) => (
-          <article key={c.name} className="overflow-hidden rounded-2xl border bg-white shadow-soft">
+          <article key={c.name} className="overflow-hidden rounded border bg-white shadow-soft">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={c.img} alt={c.name} className="h-56 w-full object-cover" />
             <div className="p-5">

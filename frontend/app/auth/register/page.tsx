@@ -24,7 +24,7 @@ export default function RegisterPage() {
           <Input placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           <Input placeholder="Password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
           <Input placeholder="Passport No (students)" value={form.passportNumber} onChange={(e) => setForm({ ...form, passportNumber: e.target.value })} />
-          <select className="h-11 w-full rounded-md border px-3 text-sm" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+          <select className="h-11 w-full rounded border px-3 text-sm" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
             <option value="STUDENT">Student</option><option value="AGENT">Agent</option><option value="INSTITUTION_STAFF">Institution</option>
           </select>
           <Button className="w-full">Create account</Button>
